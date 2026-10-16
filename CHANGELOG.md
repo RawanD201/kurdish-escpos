@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-16
+
+### Added
+
+- Label printers: Zebra (ZPL) and TSC (TSPL). Set the printer `language` to
+  `zpl` or `tspl`; the default is still `escpos`. The ZPL output was checked
+  against the Labelary ZPL viewer, which drew the sample receipt dot for dot.
+- Label options: `labelHeight` (label length in dots, or continuous paper),
+  `labelGap` (TSC), `darkness` and `dpi`. In Laravel: `language`,
+  `label_height`, `label_gap`, `darkness`, `dpi` and the
+  `KURDISH_ESCPOS_LANGUAGE` environment variable.
+- `RenderedReceipt::commands()` returns the printer commands in any
+  language. The `escpos` property still works and holds the same bytes.
+- `kurdish-escpos:test-print --language=zpl|tspl`.
+- `Bitmap::toZpl()`, `Bitmap::toTspl()` and `Bitmap::toCommands()`.
+
+### Changed
+
+- The maximum width is 2560 dots instead of 2048, for 600 dpi label
+  printers.
+- Empty values in the printer configuration, such as an empty `.env`
+  variable, now fall back to the defaults instead of causing an error.
+
 ## [0.3.0] - 2026-10-16
 
 ### Added
@@ -62,7 +85,8 @@ First release.
   standalone script.
 - Laravel service provider, facade and configuration file.
 
-[Unreleased]: https://github.com/RawanD201/kurdish-escpos/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/RawanD201/kurdish-escpos/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/RawanD201/kurdish-escpos/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/RawanD201/kurdish-escpos/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/RawanD201/kurdish-escpos/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/RawanD201/kurdish-escpos/releases/tag/v0.1.0
