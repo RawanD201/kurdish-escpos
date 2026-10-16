@@ -59,6 +59,22 @@ final class RendererTest extends TestCase
         $this->assertGreaterThan(576 - 8 - 6, $right, 'Kurdish text starts at the right margin');
     }
 
+    /** The name starts the line in its own direction; the price is at the other end. */
+    public function test_rows_follow_the_direction_of_the_name(): void
+    {
+        $ink = function (string $name): array {
+            $bitmap = Bitmap::fromImage(self::renderer()->draw(['items' => [['type' => 'row', 'name' => $name, 'price' => '']]]));
+
+            return self::inkSpan($bitmap, 0, $bitmap->height);
+        };
+
+        [$left] = $ink('Nan');
+        $this->assertLessThan(20, $left, 'a Latin name starts at the left margin');
+
+        [, $right] = $ink('نان');
+        $this->assertGreaterThan(576 - 20, $right, 'a Kurdish name starts at the right margin');
+    }
+
     public function test_58mm_paper(): void
     {
         $png = self::renderer()->render(Receipt::make(Receipt::WIDTH_58MM)->text('پێنج'))->png;

@@ -220,7 +220,7 @@ file_put_contents('preview.png', $rendered->png);
 |---|---|
 | `text($text, $size = null, $align = 'start')` | A paragraph. Long lines wrap, and `\n` starts a new paragraph. `start` is the right edge for Kurdish and Arabic and the left edge for English; `center` and `end` are also available. |
 | `title($text, $size = 40)` | Large, centered text, such as the shop name. |
-| `row($name, $price, $size = null)` | An item name on the right and a price on the left. Long names wrap. |
+| `row($name, $price, $size = null)` | An item name and its price on one line. For Kurdish and Arabic the name is on the right and the price on the left; for Latin text it is the other way around. Long names wrap. |
 | `divider()` | A dashed horizontal rule. |
 | `qr($data, $size = null)` | A centered QR code, about 240 dots wide by default. |
 | `feed($lines = 1)` | Vertical space. |
@@ -237,7 +237,7 @@ receipts are produced by another system:
   "width": 576,
   "items": [
     { "type": "text", "text": "دەرمانخانەی ئازادی", "size": 40, "align": "center" },
-    { "type": "row", "right": "کوڵێرە", "left": "1,250" },
+    { "type": "row", "name": "کوڵێرە", "price": "1,250" },
     { "type": "divider" },
     { "type": "qr", "data": "https://example.com/r/1042" },
     { "type": "feed", "lines": 1 }

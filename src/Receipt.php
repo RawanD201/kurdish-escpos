@@ -69,10 +69,13 @@ final class Receipt implements JsonSerializable
         return $this->text($text, $size, 'center');
     }
 
-    /** Adds a row with the item name on the right and the price on the left. */
+    /**
+     * Adds an item row. The name starts the line (on the right for Kurdish and
+     * Arabic, on the left for Latin text) and the price is at the other end.
+     */
     public function row(string $name, string $price, ?float $size = null): self
     {
-        return $this->add(['type' => 'row', 'right' => $name, 'left' => $price, 'size' => $size]);
+        return $this->add(['type' => 'row', 'name' => $name, 'price' => $price, 'size' => $size]);
     }
 
     /** Adds a dashed horizontal rule. */

@@ -39,7 +39,7 @@ final class Renderer
 
     private const ITEM_FIELDS = [
         'text' => ['text', 'size', 'align'],
-        'row' => ['right', 'left', 'size'],
+        'row' => ['name', 'price', 'size'],
         'divider' => [],
         'qr' => ['data', 'size'],
         'feed' => ['lines'],
@@ -173,7 +173,7 @@ final class Renderer
 
         return match ($type) {
             'text' => $this->textBand(self::string($item, 'text'), (float) ($size ?? self::DEFAULT_SIZE), $item['align'] ?? 'start'),
-            'row' => $this->rowBand(self::string($item, 'right'), self::string($item, 'left'), (float) ($size ?? self::DEFAULT_SIZE)),
+            'row' => $this->rowBand(self::string($item, 'name'), self::string($item, 'price'), (float) ($size ?? self::DEFAULT_SIZE)),
             'divider' => $this->dividerBand(),
             'qr' => $this->qrBand(self::string($item, 'data'), (int) ($size ?? self::DEFAULT_QR_SIZE)),
             'feed' => $this->feedBand($item['lines'] ?? 1),
@@ -208,8 +208,10 @@ final class Renderer
     }
 
     /**
-     * Draws an item name on the right, wrapped when long, and a price on the
-     * left. The first lines of both share a baseline.
+     * Draws an item name, wrapped when long, and a price on one row. The name
+     * starts at the beginning of the line in its own direction: on the right
+     * for right-to-left text and on the left for left-to-right text. The
+     * price is at the other end. The first lines of both share a baseline.
      */
     private function rowBand(string $name, string $price, float $size): GdImage
     {
@@ -225,16 +227,18 @@ final class Renderer
             $baseline + array_sum(array_map(fn (Line $l) => $l->height(), $priceLines)) - $priceLines[0]->ascent,
         ));
 
-        return $this->drawText($height, function (callable $draw) use ($nameLines, $priceLines, $baseline) {
+        $rtl = $nameLines[0]->rtl;
+
+        return $this->drawText($height, function (callable $draw) use ($nameLines, $priceLines, $baseline, $rtl) {
             $y = $baseline;
             foreach ($nameLines as $i => $line) {
                 $y += $i > 0 ? $nameLines[$i - 1]->descent + $line->ascent : 0;
-                $draw($line, $this->right - $line->width, $y);
+                $draw($line, $rtl ? $this->right - $line->width : (float) $this->left, $y);
             }
             $y = $baseline;
             foreach ($priceLines as $i => $line) {
                 $y += $i > 0 ? $priceLines[$i - 1]->descent + $line->ascent : 0;
-                $draw($line, (float) $this->left, $y);
+                $draw($line, $rtl ? (float) $this->left : $this->right - $line->width, $y);
             }
         });
     }

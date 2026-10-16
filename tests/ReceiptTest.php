@@ -26,7 +26,7 @@ final class ReceiptTest extends TestCase
                 ['type' => 'text', 'text' => 'دەرمانخانەی ئازادی', 'size' => 40.0, 'align' => 'center'],
                 ['type' => 'text', 'text' => 'سلێمانی، شەقامی سالم', 'size' => 24.0, 'align' => 'start'],
                 ['type' => 'divider'],
-                ['type' => 'row', 'right' => 'کوڵێرە', 'left' => '1,250'],
+                ['type' => 'row', 'name' => 'کوڵێرە', 'price' => '1,250'],
                 ['type' => 'qr', 'data' => 'https://example.com/r/1'],
                 ['type' => 'feed', 'lines' => 2],
             ],
