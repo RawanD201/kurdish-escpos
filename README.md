@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="art/banner.png" alt="kurdish-escpos: print correctly shaped Kurdish, Arabic and English receipts on ESC/POS printers with pure PHP" width="100%">
+  <img src="art/banner.png" alt="kurdish-escpos: print receipts in Sorani, Badini, Hawrami and every Kurdish dialect with pure PHP" width="100%">
 </p>
 
 <p align="center">
@@ -12,14 +12,17 @@
 
 # kurdish-escpos
 
-Print Kurdish (Sorani and Badini), Arabic and English receipts on ESC/POS
-thermal printers from PHP, with every letter joined and every line in the
-right order. The package is written in pure PHP and needs only the GD
-extension, so it runs on ordinary shared hosting as well as on servers.
+Print receipts in Kurdish, Arabic and English on thermal receipt printers,
+with PHP. It works with Sorani, Badini, Hawrami and the other Kurdish
+dialects. Every letter joins the right way, and every line reads in the
+right direction.
+
+You only need PHP and the GD extension. There is nothing else to install, so
+it also works on normal shared hosting.
 
 <div dir="rtl">
 
-**kurdish-escpos** پاکێجێکی PHPیە بۆ چاپکردنی وەسڵ بە کوردی (سۆرانی و بادینی)، عەرەبی و ئینگلیزی لەسەر پرینتەری ESC/POS. پیتەکان بە دروستی پێکەوە دەلکێن و دەق بە ڕێکی لە ڕاستەوە بۆ چەپ دەنووسرێت. هیچ بەرنامەیەکی دەرەکی پێویست نییە؛ تەنها PHP و GD.
+**kurdish-escpos** پاکێجێکی PHPیە بۆ چاپکردنی وەسڵ بە کوردی (سۆرانی، بادینی، هەورامی و شێوەزارەکانی تر)، عەرەبی و ئینگلیزی لەسەر پرینتەری وەسڵ. پیتەکان بە دروستی پێکەوە دەلکێن و دەق بە ڕێکی لە ڕاستەوە بۆ چەپ دەنووسرێت. هیچ بەرنامەیەکی دەرەکی پێویست نییە؛ تەنها PHP و GD.
 
 </div>
 
@@ -60,37 +63,38 @@ KurdishEscpos::print(
 
 ## Why this package exists
 
-Printing Kurdish on a receipt printer is harder than it looks:
+Receipt printers do not know Kurdish:
 
-- Receipt printers have built-in character sets for Latin, Cyrillic and some
-  Arabic, but none contain the Kurdish letters ڕ, ڵ, ێ and ە.
-- Printers do not join Arabic-script letters and do not handle right-to-left
-  text.
-- PHP's GD extension draws each character on its own (PHP bug
-  [#43899](https://bugs.php.net/bug.php?id=43899)), so drawing Kurdish text
-  into an image produces separate, unjoined letters.
-- Existing PHP "reshaper" libraries replace letters with Unicode
-  presentation forms. ڕ, ڵ, ێ and ە have no presentation forms, so these
-  libraries cannot join them.
+- They do not have the Kurdish letters ڕ, ڵ, ێ and ە.
+- They do not join letters together.
+- They do not write from right to left.
 
-This package reads the joining rules from the font itself, shapes the text,
-draws it into an image, and sends the image to the printer. The printer
-needs no Kurdish support at all.
+So when you send Kurdish text to a receipt printer, it prints wrong or
+broken text.
+
+Drawing the receipt as a picture with PHP does not help either. PHP's image
+functions draw every letter on its own, so the letters do not join. Some PHP
+libraries fix this for Arabic, but Kurdish letters like ڵ and ێ still come
+out broken.
+
+This package solves the problem. It joins every letter the right way, puts
+the words in the right order, draws the receipt as a picture, and sends the
+picture to the printer. Every receipt printer can print a picture, so your
+Kurdish text always looks right.
 
 ## Features
 
-- Correct joining of every Kurdish letter, including ڵ and ێ in the middle
-  of a word, and Arabic ligatures such as لا and الله.
-- Mixed right-to-left and left-to-right text, such as prices, dates and
-  English product names inside Kurdish lines.
-- Support for your own fonts, with an automatic fallback for missing
-  characters.
-- Text, titles, item rows, dividers, QR codes and paper feed, for 80 mm and
+- Every Kurdish letter joins correctly, even ڵ and ێ.
+- Works with Sorani, Badini, Hawrami and the other Kurdish dialects.
+- Kurdish, Arabic and English can be on the same line, and numbers and
+  prices stay in the right place.
+- Use the included font, or your own font, such as NRT or Rudaw.
+- Titles, text, item rows, lines, QR codes and empty space, for 80 mm and
   58 mm paper.
-- A PNG preview that matches the printed dots exactly.
-- Network printers, USB printers on Linux, and shared printers on Windows.
-- Laravel service provider, facade and configuration, with auto-discovery.
-- No binaries, no Node.js, no headless browser: only PHP and GD.
+- See a picture of the receipt before you print it.
+- Print to network printers, USB printers and Windows shared printers.
+- Ready for Laravel, and works in any PHP project.
+- Only needs PHP and GD.
 
 ## Showcase
 
@@ -252,24 +256,26 @@ rather than ignored.
 | USB on Linux | `FilePrinter` | `new FilePrinter('/dev/usb/lp0')` |
 | Shared printer on Windows | `FilePrinter` | `new FilePrinter('\\\\localhost\\XPrinter')` |
 
-Network printers almost always listen on port 9100; a different port can be
-passed as the second argument. A `FilePrinter` works only when the printer is
-connected to the machine that runs PHP, and the PHP process needs permission
-to write to it (on Linux, usually membership of the `lp` group).
+Most network printers use port 9100. If yours uses another port, pass it as
+the second argument.
 
-The output uses the standard ESC/POS raster command (`GS v 0`), which is
-supported by Epson printers and by the many printers that are compatible
-with them, such as most Xprinter models.
+`FilePrinter` only works when the printer is connected to the same computer
+that runs PHP, and PHP must be allowed to write to it. On Linux, add the web
+server user to the `lp` group.
+
+The receipt is sent as a picture with the standard ESC/POS image command.
+It works with Epson printers and with most printers that copy them, such as
+Xprinter.
 
 ## Fonts
 
-The package includes [Vazirmatn](https://github.com/rastikerdar/vazirmatn),
-which covers Kurdish, Arabic, Persian and Latin, including the Kurmanji
+The package comes with the [Vazirmatn](https://github.com/rastikerdar/vazirmatn)
+font. It has all Kurdish, Arabic and English letters, including the Kurmanji
 letters ê, î, û, ç and ş.
 
 ### Using another font
 
-Any Unicode TrueType font (`.ttf`) with OpenType joining rules can be used:
+You can use any Kurdish `.ttf` font, such as NRT or Rudaw:
 
 ```php
 $renderer = new Renderer('/path/to/NRT-Reg.ttf');
@@ -281,13 +287,14 @@ In Laravel, set the path in `.env`:
 KURDISH_ESCPOS_FONT=/var/www/fonts/NRT-Reg.ttf
 ```
 
-Characters that are missing from your font, such as English letters in many
-Kurdish fonts, are drawn with Vazirmatn instead of being left blank.
+If your font is missing some letters (many Kurdish fonts have no English
+letters), those letters are drawn with Vazirmatn, so nothing is left blank.
 
 ### Checking a font
 
-Before using a font, check that it contains all Kurdish letters and joining
-rules. The check also saves a sample receipt, so you can see the result:
+To check if a font works, run the command below. It tells you if any
+Kurdish letters are missing, and it saves a sample receipt so you can see
+how the font looks:
 
 ```bash
 php artisan kurdish-escpos:check-font /path/to/font.ttf --preview=sample.png
