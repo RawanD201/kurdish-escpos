@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/RawanD201/kurdish-escpos/security/advisories/new
+    about: Please report vulnerabilities privately, not as public issues.
+  - name: Questions and ideas
+    url: https://github.com/RawanD201/kurdish-escpos/discussions
+    about: Ask questions and share ideas in GitHub Discussions.

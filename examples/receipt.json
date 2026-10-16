@@ -1,0 +1,23 @@
+{
+  "width": 576,
+  "margin": 8,
+  "items": [
+    { "type": "text", "text": "دەرمانخانەی ئازادی", "size": 40, "align": "center" },
+    { "type": "text", "text": "سلێمانی، شەقامی سالم", "size": 24, "align": "center" },
+    { "type": "text", "text": "Azadi Pharmacy", "size": 22, "align": "center" },
+    { "type": "divider" },
+    { "type": "row", "right": "ژمارەی وەسڵ", "left": "1042", "size": 24 },
+    { "type": "row", "right": "بەروار", "left": "2026-10-16 14:30", "size": 24 },
+    { "type": "divider" },
+    { "type": "row", "right": "پاراسیتامۆڵ ٥٠٠ ملگم × ٢", "left": "3,000", "size": 26 },
+    { "type": "row", "right": "ڤیتامین C هەڵپڕژێنراو، دەبەی گەورە بۆ هەموو ئەندامانی خێزان", "left": "12,500", "size": 26 },
+    { "type": "row", "right": "کوڵێرە", "left": "1,250", "size": 26 },
+    { "type": "divider" },
+    { "type": "row", "right": "کۆی گشتی", "left": "16,750 دینار", "size": 32 },
+    { "type": "feed", "lines": 1 },
+    { "type": "text", "text": "ڕۆژێکی خۆش، سوپاس بۆ کڕینەکەت", "size": 26, "align": "center" },
+    { "type": "text", "text": "Thank you for your purchase", "size": 20, "align": "center" },
+    { "type": "qr", "data": "https://example.com/r/1042" },
+    { "type": "feed", "lines": 1 }
+  ]
+}

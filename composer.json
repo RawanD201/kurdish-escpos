@@ -1,0 +1,89 @@
+{
+    "name": "rawand201/kurdish-escpos",
+    "description": "Print correctly shaped Kurdish (Sorani and Badini), Arabic and English receipts on ESC/POS thermal printers. Pure PHP, no binaries.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "kurdish",
+        "sorani",
+        "badini",
+        "arabic",
+        "rtl",
+        "bidi",
+        "escpos",
+        "esc-pos",
+        "receipt",
+        "thermal-printer",
+        "pos",
+        "harfbuzz",
+        "laravel",
+        "filament"
+    ],
+    "homepage": "https://github.com/RawanD201/kurdish-escpos",
+    "authors": [
+        {
+            "name": "RawanD201",
+            "homepage": "https://github.com/RawanD201",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/RawanD201/kurdish-escpos/issues",
+        "source": "https://github.com/RawanD201/kurdish-escpos",
+        "security": "https://github.com/RawanD201/kurdish-escpos/security/policy"
+    },
+    "require": {
+        "php": "^8.2",
+        "ext-gd": "*",
+        "ext-iconv": "*",
+        "ext-json": "*",
+        "bacon/bacon-qr-code": "^3.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.32",
+        "orchestra/testbench": "^9.0|^10.0|^11.0",
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^11.5|^12.0"
+    },
+    "suggest": {
+        "illuminate/support": "For the Laravel service provider and facade (^11.0|^12.0|^13.0)"
+    },
+    "autoload": {
+        "psr-4": {
+            "Rawand\\KurdishEscpos\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Rawand\\KurdishEscpos\\Tests\\": "tests/"
+        }
+    },
+    "bin": [
+        "bin/kurdish-escpos-check-font"
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Rawand\\KurdishEscpos\\Laravel\\KurdishEscposServiceProvider"
+            ],
+            "aliases": {
+                "KurdishEscpos": "Rawand\\KurdishEscpos\\Laravel\\Facades\\KurdishEscpos"
+            }
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "format": "pint",
+        "analyse": "phpstan analyse --memory-limit=1G"
+    },
+    "scripts-descriptions": {
+        "test": "Run the test suite",
+        "format": "Fix the code style with Laravel Pint",
+        "analyse": "Run PHPStan static analysis"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

@@ -1,0 +1,44 @@
+#!/usr/bin/env php
+<?php
+
+// Checks whether a font is suitable for printing Kurdish receipts and,
+// optionally, saves a sample receipt rendered with it.
+//
+//   vendor/bin/kurdish-escpos-check-font /path/to/font.ttf [preview.png]
+//
+// Laravel applications can use: php artisan kurdish-escpos:check-font
+
+declare(strict_types=1);
+
+use Rawand\KurdishEscpos\FontCheck;
+use Rawand\KurdishEscpos\Renderer;
+
+foreach ([$GLOBALS['_composer_autoload_path'] ?? null, __DIR__.'/../vendor/autoload.php'] as $autoload) {
+    if ($autoload !== null && is_file($autoload)) {
+        require $autoload;
+        break;
+    }
+}
+
+[$font, $preview] = [$argv[1] ?? null, $argv[2] ?? null];
+if ($font === null) {
+    fwrite(STDERR, "Usage: kurdish-escpos-check-font FONT.ttf [PREVIEW.png]\n");
+    exit(2);
+}
+
+$result = FontCheck::check($font);
+echo $result['name'], "\n";
+foreach ($result['problems'] as $problem) {
+    echo "  PROBLEM: {$problem}\n";
+}
+foreach ($result['notes'] as $note) {
+    echo "  NOTE: {$note}\n";
+}
+echo $result['ok'] ? "  OK: the font is suitable for Kurdish.\n" : "  The font is not suitable for Kurdish.\n";
+
+if ($preview !== null && ! str_contains($result['problems'][0] ?? '', 'outlines')) {
+    file_put_contents($preview, (new Renderer($font))->render(FontCheck::sampleReceipt())->png);
+    echo "  Sample receipt saved to {$preview}\n";
+}
+
+exit($result['ok'] ? 0 : 1);
