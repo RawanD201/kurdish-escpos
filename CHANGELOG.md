@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-10-16
+
+### Changed
+
+- No code changes. This release is the same code as 0.5.0, published again
+  from the cleaned-up git history. Packagist keeps published versions on
+  their original commits, so 0.1.0 to 0.5.0 are no longer installable;
+  use `^0.5` or later.
+
 ## [0.5.0] - 2026-10-16
 
 ### Changed
@@ -93,7 +102,8 @@ First release.
   standalone script.
 - Laravel service provider, facade and configuration file.
 
-[Unreleased]: https://github.com/RawanD201/kurdish-escpos/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/RawanD201/kurdish-escpos/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/RawanD201/kurdish-escpos/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/RawanD201/kurdish-escpos/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/RawanD201/kurdish-escpos/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/RawanD201/kurdish-escpos/compare/v0.2.0...v0.3.0
