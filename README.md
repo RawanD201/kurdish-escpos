@@ -98,10 +98,11 @@ Kurdish text always looks right.
 
 ## Showcase
 
-The same receipt printed with six different fonts:
+Receipts in Sorani, Badini, Hawrami, Gorani, Laki, Luri and Zazaki, each
+printed by the package with a different font:
 
 <p align="center">
-  <img src="art/fonts.png" alt="The same receipt printed by kurdish-escpos in Vazirmatn, NRT, Rudaw, Kurdistan 24, Speda and Unikurd Jino" width="100%">
+  <img src="art/fonts.png" alt="Receipts in Sorani, Badini, Hawrami, Gorani, Laki, Luri and Zazaki printed by kurdish-escpos" width="100%">
 </p>
 
 ## Installation
