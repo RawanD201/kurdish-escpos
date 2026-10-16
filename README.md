@@ -47,6 +47,7 @@ KurdishEscpos::print(
 
 - [Why this package exists](#why-this-package-exists)
 - [Features](#features)
+- [Showcase](#showcase)
 - [Installation](#installation)
 - [Usage with Laravel](#usage-with-laravel)
 - [Usage without Laravel](#usage-without-laravel)
@@ -90,6 +91,14 @@ needs no Kurdish support at all.
 - Network printers, USB printers on Linux, and shared printers on Windows.
 - Laravel service provider, facade and configuration, with auto-discovery.
 - No binaries, no Node.js, no headless browser: only PHP and GD.
+
+## Showcase
+
+The same receipt printed with six different fonts:
+
+<p align="center">
+  <img src="art/fonts.png" alt="The same receipt printed with six different fonts" width="100%">
+</p>
 
 ## Installation
 
