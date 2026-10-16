@@ -6,6 +6,7 @@ namespace Rawand\KurdishEscpos\Laravel;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
+use Rawand\KurdishEscpos\EscPos\PrinterOptions;
 use Rawand\KurdishEscpos\KurdishEscpos;
 use Rawand\KurdishEscpos\Printers\FilePrinter;
 use Rawand\KurdishEscpos\Printers\NetworkPrinter;
@@ -21,6 +22,7 @@ class KurdishEscposServiceProvider extends ServiceProvider
 
         $this->app->singleton(Renderer::class, fn (Application $app) => new Renderer(
             $app['config']->get('kurdish-escpos.font') ?: null,
+            PrinterOptions::fromArray($app['config']->get('kurdish-escpos.printer', [])),
         ));
 
         $this->app->singleton(KurdishEscpos::class, fn (Application $app) => new KurdishEscpos(
@@ -38,7 +40,7 @@ class KurdishEscposServiceProvider extends ServiceProvider
                 __DIR__.'/../../config/kurdish-escpos.php' => config_path('kurdish-escpos.php'),
             ], 'kurdish-escpos-config');
 
-            $this->commands([Console\CheckFontCommand::class]);
+            $this->commands([Console\CheckFontCommand::class, Console\TestPrintCommand::class]);
         }
     }
 

@@ -55,7 +55,7 @@ KurdishEscpos::print(
 - [Usage with Laravel](#usage-with-laravel)
 - [Usage without Laravel](#usage-without-laravel)
 - [Building receipts](#building-receipts)
-- [Printers](#printers)
+- [Supported printers](#supported-printers)
 - [Fonts](#fonts)
 - [Contributing](#contributing)
 - [Credits](#credits)
@@ -225,6 +225,7 @@ file_put_contents('preview.png', $rendered->png);
 | `divider()` | A dashed horizontal rule. |
 | `qr($data, $size = null)` | A centered QR code, about 240 dots wide by default. |
 | `feed($lines = 1)` | Vertical space. |
+| `openDrawer()` | Opens the cash drawer after printing. |
 
 Sizes are measured in printer dots, at 203 dots per inch. The default text
 size is 24. For 58 mm paper, create the receipt with
@@ -249,24 +250,105 @@ receipts are produced by another system:
 Unknown fields and invalid values are reported with a clear error message
 rather than ignored.
 
-## Printers
+## Supported printers
 
-| Printer | Class | Example |
+This package works with almost every thermal receipt printer. Your printer
+only needs to:
+
+1. Speak **ESC/POS**. This is the command language that almost all receipt
+   printers use. It was made by Epson, and most other brands copied it.
+2. Print pictures. The package sends each receipt as one picture, so the
+   printer does not need to know Kurdish at all.
+
+This includes most receipt printers sold in Kurdistan, such as Xprinter,
+Epson TM, Rongta and HPRT models.
+
+These printers do **not** work:
+
+- Label printers, such as Zebra and TSC. They use other languages (ZPL,
+  TSPL), not ESC/POS.
+- Star Micronics printers in Star mode. Many Star models can be switched to
+  ESC/POS mode in their settings.
+- Normal office printers (A4 laser or inkjet).
+
+### Connecting the printer
+
+| Connection | Class | Example |
 |---|---|---|
 | Ethernet or Wi-Fi | `NetworkPrinter` | `new NetworkPrinter('192.168.1.50')` |
 | USB on Linux | `FilePrinter` | `new FilePrinter('/dev/usb/lp0')` |
 | Shared printer on Windows | `FilePrinter` | `new FilePrinter('\\\\localhost\\XPrinter')` |
+| Serial or Bluetooth on Linux | `FilePrinter` | `new FilePrinter('/dev/ttyUSB0')` |
 
 Most network printers use port 9100. If yours uses another port, pass it as
 the second argument.
 
 `FilePrinter` only works when the printer is connected to the same computer
 that runs PHP, and PHP must be allowed to write to it. On Linux, add the web
-server user to the `lp` group.
+server user to the `lp` group. For a serial printer, set the speed first, for
+example `stty -F /dev/ttyUSB0 9600`. A Bluetooth printer that is paired as a
+serial port appears as `/dev/rfcomm0`.
 
-The receipt is sent as a picture with the standard ESC/POS image command.
-It works with Epson printers and with most printers that copy them, such as
-Xprinter.
+### Paper width
+
+Set the width to the number of dots your printer prints on one line:
+
+| Paper | Width |
+|---|---|
+| 80 mm | 576 dots (some models, such as the Epson TM-T88, print 512) |
+| 58 mm | 384 dots |
+
+If you are not sure, print the printer's self-test page: turn the printer
+off, hold the FEED button, and turn it on. The page shows the print width.
+
+### Older printers
+
+Some older printers do not understand the normal picture command. If your
+printer prints nothing, or prints strange symbols, switch to the older
+command:
+
+```php
+use Rawand\KurdishEscpos\EscPos\PrinterOptions;
+
+$renderer = new Renderer(options: new PrinterOptions(image: 'column'));
+```
+
+In Laravel, set `KURDISH_ESCPOS_IMAGE=column` in `.env`.
+
+### Cutting and the cash drawer
+
+| Option | Values |
+|---|---|
+| `cut` | `partial` (default), `full`, or `none` for printers without a cutter |
+| `feed` | Lines of paper fed before the cut (default 4) |
+| `drawerPin` | The cash drawer pin: 2 (default) or 5 |
+
+```php
+$renderer = new Renderer(options: new PrinterOptions(cut: 'full'));
+```
+
+In Laravel, set `KURDISH_ESCPOS_CUT=full` in `.env`.
+
+To open the cash drawer that is connected to the printer, call
+`openDrawer()` on the receipt:
+
+```php
+KurdishEscpos::print($receipt->openDrawer());
+```
+
+### Testing your printer
+
+Print a test page to check that everything works:
+
+```bash
+php artisan kurdish-escpos:test-print 192.168.1.50
+php artisan kurdish-escpos:test-print /dev/usb/lp0 --width=384
+```
+
+The test page has the words «ڕاست» (right) and «چەپ» (left) at the two
+edges of the paper. If one of them is cut off, your width is too large. If
+nothing prints, try `--image=column`. Without an address, the command uses
+the printer in your configuration.
 
 ## Fonts
 

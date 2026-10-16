@@ -30,6 +30,8 @@ final class Receipt implements JsonSerializable
     /** @var list<array<string, mixed>> */
     private array $items = [];
 
+    private bool $drawer = false;
+
     /**
      * @param  int  $width  Printable width in dots (576 for 80 mm paper, 384 for 58 mm).
      * @param  int|null  $margin  Horizontal margin in dots; the renderer default is 8.
@@ -108,12 +110,23 @@ final class Receipt implements JsonSerializable
         return $this->add(['type' => 'feed', 'lines' => $lines]);
     }
 
-    /** @return array{width: int, margin?: int, items: list<array<string, mixed>>} */
+    /** Opens the cash drawer connected to the printer after the receipt is printed. */
+    public function openDrawer(): self
+    {
+        $this->drawer = true;
+
+        return $this;
+    }
+
+    /** @return array{width: int, margin?: int, drawer?: true, items: list<array<string, mixed>>} */
     public function toArray(): array
     {
         $receipt = ['width' => $this->width];
         if ($this->margin !== null) {
             $receipt['margin'] = $this->margin;
+        }
+        if ($this->drawer) {
+            $receipt['drawer'] = true;
         }
         $receipt['items'] = $this->items;
 
@@ -126,7 +139,7 @@ final class Receipt implements JsonSerializable
         return json_encode($this->toArray(), $flags | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
     }
 
-    /** @return array{width: int, margin?: int, items: list<array<string, mixed>>} */
+    /** @return array{width: int, margin?: int, drawer?: true, items: list<array<string, mixed>>} */
     public function jsonSerialize(): array
     {
         return $this->toArray();

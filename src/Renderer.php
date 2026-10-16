@@ -9,6 +9,7 @@ use BaconQrCode\Encoder\Encoder;
 use GdImage;
 use JsonException;
 use Rawand\KurdishEscpos\EscPos\Bitmap;
+use Rawand\KurdishEscpos\EscPos\PrinterOptions;
 use Rawand\KurdishEscpos\Exceptions\RenderException;
 use Rawand\KurdishEscpos\Image\Rasterizer;
 use Rawand\KurdishEscpos\Text\Font;
@@ -57,12 +58,15 @@ final class Renderer
 
     private ?GdImage $canvas = null;
 
+    private readonly PrinterOptions $options;
+
     /**
      * @param  Font|string|null  $font  A font, or the path to a .ttf file. When null, the
      *                                  bundled Vazirmatn font is used. Vazirmatn is also
      *                                  the fallback for characters the font lacks.
+     * @param  PrinterOptions|null  $options  Image command, cut and feed settings for the printer.
      */
-    public function __construct(Font|string|null $font = null)
+    public function __construct(Font|string|null $font = null, ?PrinterOptions $options = null)
     {
         if (! extension_loaded('gd')) {
             throw new RenderException('The PHP GD extension is required to draw receipts.');
@@ -71,6 +75,7 @@ final class Renderer
         $fallback = Font::default();
         $this->layout = new TextLayout($main === $fallback ? [$main] : [$main, $fallback]);
         $this->rasterizer = new Rasterizer;
+        $this->options = $options ?? new PrinterOptions;
     }
 
     /**
@@ -78,9 +83,14 @@ final class Renderer
      */
     public function render(Receipt|array|string $receipt): RenderedReceipt
     {
-        $bitmap = Bitmap::fromImage($this->draw($receipt));
+        $data = $this->normalize($receipt);
+        $drawer = $data['drawer'] ?? false;
+        if (! is_bool($drawer)) {
+            throw new RenderException('"drawer" must be true or false.');
+        }
+        $bitmap = Bitmap::fromImage($this->draw($data));
 
-        return new RenderedReceipt($bitmap->toPng(), $bitmap->toEscPos());
+        return new RenderedReceipt($bitmap->toPng(), $bitmap->toEscPos($this->options, $drawer));
     }
 
     /**
@@ -147,7 +157,7 @@ final class Renderer
                 throw new RenderException('Receipt JSON must be an object.');
             }
         }
-        if ($unknown = array_diff(array_keys($receipt), ['width', 'margin', 'items'])) {
+        if ($unknown = array_diff(array_keys($receipt), ['width', 'margin', 'drawer', 'items'])) {
             throw new RenderException('Unknown receipt field "'.reset($unknown).'".');
         }
 

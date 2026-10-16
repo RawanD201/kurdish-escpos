@@ -6,6 +6,7 @@ namespace Rawand\KurdishEscpos\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Rawand\KurdishEscpos\EscPos\Bitmap;
+use Rawand\KurdishEscpos\EscPos\PrinterOptions;
 use Rawand\KurdishEscpos\Exceptions\RenderException;
 use Rawand\KurdishEscpos\Receipt;
 use Rawand\KurdishEscpos\Renderer;
@@ -127,5 +128,21 @@ final class RendererTest extends TestCase
         }
 
         return [$left, $right];
+    }
+
+    public function test_printer_options_and_cash_drawer(): void
+    {
+        $receipt = Receipt::make()->text('سوپاس')->openDrawer();
+
+        $raster = self::renderer()->render($receipt)->escpos;
+        $this->assertStringContainsString(Bitmap::RASTER, $raster);
+        $this->assertStringEndsWith("\x1B\x70\x00\x19\xFA", $raster);
+
+        $column = (new Renderer(null, new PrinterOptions(image: 'column', cut: 'none')))->render($receipt)->escpos;
+        $this->assertStringContainsString(Bitmap::COLUMN, $column);
+        $this->assertStringNotContainsString(Bitmap::CUT, $column);
+
+        $this->expectException(RenderException::class);
+        self::renderer()->render(['drawer' => 'yes', 'items' => [['type' => 'feed']]]);
     }
 }

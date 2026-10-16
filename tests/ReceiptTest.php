@@ -65,4 +65,10 @@ final class ReceiptTest extends TestCase
             }
         }
     }
+
+    public function test_open_drawer(): void
+    {
+        $this->assertArrayNotHasKey('drawer', Receipt::make()->text('x')->toArray());
+        $this->assertTrue(Receipt::make()->text('x')->openDrawer()->toArray()['drawer']);
+    }
 }

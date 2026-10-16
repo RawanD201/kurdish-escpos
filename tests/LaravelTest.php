@@ -65,4 +65,36 @@ final class LaravelTest extends TestCase
         $this->artisan('kurdish-escpos:check-font', ['font' => __FILE__])
             ->assertFailed();
     }
+
+    public function test_printer_options_come_from_config(): void
+    {
+        config(['kurdish-escpos.printer.image' => 'column', 'kurdish-escpos.printer.cut' => 'none']);
+
+        $escpos = $this->app->make(Renderer::class)->render(['items' => [['type' => 'text', 'text' => 'سوپاس']]])->escpos;
+
+        $this->assertStringContainsString("\x1B\x2A\x21", $escpos);
+        $this->assertStringNotContainsString("\x1D\x56", $escpos);
+    }
+
+    public function test_test_print_command(): void
+    {
+        $device = tempnam(sys_get_temp_dir(), 'kurdish-escpos-test-');
+        $preview = $device.'.png';
+        try {
+            $this->artisan('kurdish-escpos:test-print', ['printer' => $device, '--preview' => $preview])
+                ->assertSuccessful();
+            $this->assertStringStartsWith("\x1B\x40\x1D\x76\x30\x00", (string) file_get_contents($device));
+            $this->assertSame(576, getimagesize($preview)[0]);
+
+            $this->artisan('kurdish-escpos:test-print', ['printer' => $device, '--width' => 384, '--image' => 'column'])
+                ->assertSuccessful();
+            $this->assertStringContainsString("\x1B\x2A\x21\x80\x01", (string) file_get_contents($device));
+
+            $this->artisan('kurdish-escpos:test-print', ['printer' => $device, '--image' => 'bitmap'])
+                ->assertFailed();
+        } finally {
+            @unlink($device);
+            @unlink($preview);
+        }
+    }
 }

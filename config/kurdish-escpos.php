@@ -44,12 +44,22 @@ return [
     | \\localhost\XPrinter on Windows. Leave both empty to pass a printer
     | explicitly when printing.
     |
+    | "image" is the picture command: "raster" works on most printers; use
+    | "column" for older printers that print nothing or print symbols. "cut"
+    | is "partial", "full" or "none" (for printers without a cutter). "feed"
+    | is the number of lines fed before the cut, and "drawer_pin" (2 or 5) is
+    | the connector pin of the cash drawer.
+    |
     */
     'printer' => [
         'host' => env('KURDISH_ESCPOS_PRINTER_HOST'),
         'port' => (int) env('KURDISH_ESCPOS_PRINTER_PORT', 9100),
         'path' => env('KURDISH_ESCPOS_PRINTER_PATH'),
         'timeout' => 10,
+        'image' => env('KURDISH_ESCPOS_IMAGE', 'raster'),
+        'cut' => env('KURDISH_ESCPOS_CUT', 'partial'),
+        'feed' => 4,
+        'drawer_pin' => 2,
     ],
 
 ];

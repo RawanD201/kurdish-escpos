@@ -6,6 +6,7 @@ namespace Rawand\KurdishEscpos\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Rawand\KurdishEscpos\EscPos\Bitmap;
+use Rawand\KurdishEscpos\EscPos\PrinterOptions;
 
 final class BitmapTest extends TestCase
 {
@@ -51,5 +52,55 @@ final class BitmapTest extends TestCase
         $preview = $bitmap->toImage();
 
         $this->assertSame($bitmap->rows, Bitmap::fromImage($preview)->rows);
+    }
+
+    public function test_column_mode_for_older_printers(): void
+    {
+        mt_srand(2);
+        $rows = '';
+        for ($i = 0; $i < 72 * 50; $i++) {
+            $rows .= chr(mt_rand(0, 255));
+        }
+        $bitmap = new Bitmap(576, 50, $rows); // three stripes of 24 rows
+
+        $bytes = $bitmap->toEscPos(new PrinterOptions(image: PrinterOptions::IMAGE_COLUMN));
+
+        // ESC @, ESC 3 24, then ESC * 33 with 576 columns (0x0240).
+        $this->assertStringStartsWith("\x1B\x40\x1B\x33\x18\x1B\x2A\x21\x40\x02", $bytes);
+        $this->assertSame(3, substr_count($bytes, "\x1B\x2A\x21\x40\x02"));
+        $decoded = Bitmap::fromEscPos($bytes);
+        $this->assertSame(72, $decoded->height);
+        $this->assertSame($rows, substr($decoded->rows, 0, strlen($rows)));
+        $this->assertSame(str_repeat("\0", 72 * 22), substr($decoded->rows, strlen($rows)), 'padding rows are white');
+    }
+
+    public function test_feed_cut_and_cash_drawer(): void
+    {
+        $bitmap = new Bitmap(8, 1, "\x80");
+
+        $this->assertStringEndsWith("\x1B\x64\x04\x1D\x56\x42\x00", $bitmap->toEscPos());
+        $this->assertStringEndsWith("\x1B\x64\x02\x1D\x56\x41\x00", $bitmap->toEscPos(new PrinterOptions(cut: 'full', feed: 2)));
+        $this->assertStringEndsWith("\x01\x00\x80", $bitmap->toEscPos(new PrinterOptions(cut: 'none', feed: 0)));
+        $this->assertStringEndsWith("\x1D\x56\x42\x00\x1B\x70\x00\x19\xFA", $bitmap->toEscPos(null, true));
+        $this->assertStringEndsWith("\x1B\x70\x01\x19\xFA", $bitmap->toEscPos(new PrinterOptions(drawerPin: 5), true));
+        $this->assertSame("\x80", Bitmap::fromEscPos($bitmap->toEscPos(new PrinterOptions(cut: 'full'), true))->rows);
+    }
+
+    public function test_invalid_printer_options(): void
+    {
+        foreach ([
+            fn () => new PrinterOptions(image: 'bitmap'),
+            fn () => new PrinterOptions(cut: 'half'),
+            fn () => new PrinterOptions(feed: 300),
+            fn () => new PrinterOptions(drawerPin: 3),
+        ] as $i => $make) {
+            try {
+                $make();
+                $this->fail("case {$i} did not throw");
+            } catch (\InvalidArgumentException) {
+                $this->addToAssertionCount(1);
+            }
+        }
+        $this->assertSame('column', PrinterOptions::fromArray(['image' => 'column'])->image);
     }
 }

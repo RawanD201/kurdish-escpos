@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support for older printers with the `ESC *` picture command
+  (`PrinterOptions(image: 'column')`).
+- Cut, paper feed and cash drawer settings in `PrinterOptions`, and
+  `Receipt::openDrawer()`.
+- `php artisan kurdish-escpos:test-print` prints a test page that checks the
+  printer and the paper width.
+- A "Supported printers" section in the README.
+
 ## [0.1.0] - 2026-10-16
 
 First release.
