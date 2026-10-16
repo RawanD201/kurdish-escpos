@@ -16,8 +16,7 @@
         "thermal-printer",
         "pos",
         "harfbuzz",
-        "laravel",
-        "filament"
+        "laravel"
     ],
     "homepage": "https://github.com/RawanD201/kurdish-escpos",
     "authors": [

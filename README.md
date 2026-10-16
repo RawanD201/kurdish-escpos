@@ -53,9 +53,6 @@ KurdishEscpos::print(
 - [Building receipts](#building-receipts)
 - [Printers](#printers)
 - [Fonts](#fonts)
-- [How it works](#how-it-works)
-- [Frequently asked questions](#frequently-asked-questions)
-- [Roadmap](#roadmap)
 - [Contributing](#contributing)
 - [Credits](#credits)
 - [License](#license)
@@ -75,10 +72,9 @@ Printing Kurdish on a receipt printer is harder than it looks:
   presentation forms. ڕ, ڵ, ێ and ە have no presentation forms, so these
   libraries cannot join them.
 
-This package solves the problem the way browsers and operating systems do. It
-reads the joining rules from the font itself, shapes the text, draws it into
-an image, and sends the image to the printer. The printer needs no Kurdish
-support at all.
+This package reads the joining rules from the font itself, shapes the text,
+draws it into an image, and sends the image to the printer. The printer
+needs no Kurdish support at all.
 
 ## Features
 
@@ -86,10 +82,8 @@ support at all.
   of a word, and Arabic ligatures such as لا and الله.
 - Mixed right-to-left and left-to-right text, such as prices, dates and
   English product names inside Kurdish lines.
-- Output identical to HarfBuzz, the shaping engine used by Chrome, Firefox
-  and Android, on every font tested.
-- Support for your own fonts, including popular Kurdish fonts such as NRT,
-  Rudaw, Kurdistan 24 and Speda.
+- Support for your own fonts, with an automatic fallback for missing
+  characters.
 - Text, titles, item rows, dividers, QR codes and paper feed, for 80 mm and
   58 mm paper.
 - A PNG preview that matches the printed dots exactly.
@@ -187,19 +181,6 @@ class PrintReceipt implements ShouldQueue
         KurdishEscpos::print($receipt);
     }
 }
-```
-
-### Filament
-
-A "Print receipt" action in a Filament resource:
-
-```php
-use Filament\Actions\Action; // Filament\Tables\Actions\Action in Filament 3
-
-Action::make('printReceipt')
-    ->label('Print receipt')
-    ->icon('heroicon-o-printer')
-    ->action(fn (Order $record) => PrintReceipt::dispatch($record));
 ```
 
 ## Usage without Laravel
@@ -306,79 +287,6 @@ php artisan kurdish-escpos:check-font /path/to/font.ttf --preview=sample.png
 vendor/bin/kurdish-escpos-check-font /path/to/font.ttf sample.png
 ```
 
-### Tested fonts
-
-The following fonts were tested against HarfBuzz, and the package produced
-identical output for every test sentence:
-
-| Fonts | Source |
-|---|---|
-| Vazirmatn (bundled) | [Google Fonts](https://fonts.google.com/specimen/Vazirmatn) |
-| NRT, Rudaw, Kurdistan 24 Bold and Light, Speda, Unikurd Jino, UniMahan Nurhan, Sarchia Makka, Nizar Aldhabi, Nizar Nastaliq Kurdish | [kurdfonts.com](https://www.kurdfonts.com/) (not included; check each font's license) |
-| Noto Naskh Arabic, Noto Sans Arabic, Noto Kufi Arabic, Noto Nastaliq Urdu, Amiri, Scheherazade New, Harmattan, Lateef, IBM Plex Sans Arabic | [Google Fonts](https://fonts.google.com/) |
-
-Fonts made only for Arabic, such as Cairo or Tajawal, lack the Kurdish
-letters; the font check reports this.
-
-<p align="center">
-  <img src="art/fonts.png" alt="The same receipt printed with six different fonts" width="100%">
-</p>
-
-### Limitations
-
-- Fonts with PostScript outlines (most `.otf` files) are not supported yet.
-  The font check reports such fonts.
-- Variable fonts are drawn at their default weight.
-- Old non-Unicode Kurdish fonts, such as the Ali-K family, store Kurdish
-  letters under the codes of other characters and cannot work with any
-  modern software.
-- Fonts differ in design size. Some, such as Kurdistan 24, appear smaller at
-  the same size and may need a larger `size`.
-
-## How it works
-
-1. **Shaping.** The text is converted into glyphs using the font's OpenType
-   tables (GSUB and GPOS): the correct form of each letter at the start,
-   middle or end of a word, ligatures, kerning and the placement of vowel
-   marks.
-2. **Bidirectional layout.** The Unicode Bidirectional Algorithm orders
-   right-to-left and left-to-right text on each line.
-3. **Drawing.** The glyph outlines are filled with GD at four times the
-   final resolution and scaled down for smooth edges.
-4. **Printing.** The image is converted to black and white dots and sent with
-   the ESC/POS raster command, followed by a paper feed and a cut.
-
-A typical receipt renders in about 130 ms and uses less than 10 MB of memory.
-
-## Frequently asked questions
-
-**Does it support Badini?**
-Yes. Badini uses the same Arabic-script letters as Sorani, and Latin-script
-Kurmanji is also supported.
-
-**Can a website print to a USB printer at the cashier's desk?**
-Only if PHP runs on the computer the printer is connected to. For an online
-application, use a network printer, or connect the USB printer to a computer
-on the same network and share it.
-
-**Why not convert the text to the printer's character set?**
-No printer character set contains the Kurdish letters, and none can join
-Arabic-script letters. Printing an image avoids both problems and works on
-any ESC/POS printer.
-
-**Has it been tested on real printers?**
-The output follows the ESC/POS specification and is verified byte for byte
-in the test suite. Reports from real printers are very welcome; please open
-an issue with your printer model, whether or not everything worked.
-
-## Roadmap
-
-- A Filament plugin with a print action and preview
-- Logos and other images on receipts
-- Barcodes
-- Bold text through a second font file
-- Fonts with PostScript (CFF) outlines
-
 ## Contributing
 
 Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md)
@@ -397,14 +305,7 @@ of opening a public issue. All changes are listed in
 
 ## Credits
 
-- [RawanD201](https://github.com/RawanD201), author and maintainer
-- [Saber Rastikerdar](https://github.com/rastikerdar) and contributors, for
-  the Vazirmatn font
-- The [HarfBuzz](https://harfbuzz.github.io/) project, whose behavior the
-  shaper follows and is tested against
-- [Bacon QR Code](https://github.com/Bacon/BaconQrCode), used to generate QR
-  codes
-- [All contributors](https://github.com/RawanD201/kurdish-escpos/contributors)
+- [RawanD201](https://github.com/RawanD201)
 
 ## License
 
