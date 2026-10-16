@@ -12,8 +12,8 @@
 
 # kurdish-escpos
 
-Print receipts in Kurdish, Arabic and English on thermal receipt printers,
-with PHP. It works with Sorani, Badini, Hawrami and the other Kurdish
+Print receipts and labels in Kurdish, Arabic and English on thermal
+printers, with PHP. It works with Sorani, Badini, Hawrami and the other Kurdish
 dialects. Every letter joins the right way, and every line reads in the
 right direction.
 
@@ -91,8 +91,10 @@ Kurdish text always looks right.
   prices stay in the right place.
 - Use the included font, or your own font, such as NRT or Rudaw.
 - Titles, text, item rows, lines, QR codes and empty space, for 80 mm and
-  58 mm paper.
+  58 mm paper and for labels.
 - See a picture of the receipt before you print it.
+- Works with receipt printers (ESC/POS) and with Zebra and TSC label
+  printers.
 - Print to network printers, USB printers and Windows shared printers.
 - Ready for Laravel, and works in any PHP project.
 - Only needs PHP and GD.
@@ -213,7 +215,7 @@ $receipt = Receipt::make()
 $rendered = (new Renderer)->render($receipt);
 
 file_put_contents('preview.png', $rendered->png);
-(new NetworkPrinter('192.168.1.50'))->send($rendered->escpos);
+(new NetworkPrinter('192.168.1.50'))->send($rendered->commands());
 ```
 
 ## Building receipts
@@ -253,21 +255,25 @@ rather than ignored.
 
 ## Supported printers
 
-This package works with almost every thermal receipt printer. Your printer
-only needs to:
+This package works with almost every thermal receipt printer, and with
+Zebra and TSC label printers. Your printer only needs to:
 
-1. Speak **ESC/POS**. This is the command language that almost all receipt
-   printers use. It was made by Epson, and most other brands copied it.
+1. Speak one of these command languages:
+   - **ESC/POS**, which almost all receipt printers use. It was made by
+     Epson, and most other brands copied it. This is the default.
+   - **ZPL**, used by Zebra label printers.
+   - **TSPL**, used by TSC label printers and many other label printers.
+     The printer's manual tells you if it supports TSPL.
 2. Print pictures. The package sends each receipt as one picture, so the
    printer does not need to know Kurdish at all.
 
 This includes most receipt printers sold in Kurdistan, such as Xprinter,
-Epson TM, Rongta and HPRT models.
+Epson TM, Rongta and HPRT models, and label printers such as the Zebra
+ZD220, ZD421 and GK420 and the TSC TE200 and TTP-244.
 
 These printers do **not** work:
 
-- Label printers, such as Zebra and TSC. They use other languages (ZPL,
-  TSPL), not ESC/POS.
+- Very old Zebra printers that only speak EPL, such as the LP 2844.
 - Star Micronics printers in Star mode. Many Star models can be switched to
   ESC/POS mode in their settings.
 - Normal office printers (A4 laser or inkjet).
@@ -337,6 +343,47 @@ To open the cash drawer that is connected to the printer, call
 KurdishEscpos::print($receipt->openDrawer());
 ```
 
+### Label printers
+
+Zebra and TSC printers print labels, such as price tags and pharmacy labels.
+Tell the package which language your printer speaks:
+
+```php
+$renderer = new Renderer(options: new PrinterOptions(language: 'zpl'));   // Zebra
+$renderer = new Renderer(options: new PrinterOptions(language: 'tspl'));  // TSC
+```
+
+In Laravel, set `KURDISH_ESCPOS_LANGUAGE=zpl` (or `tspl`) in `.env`.
+
+Set the width to the width of your labels, in dots:
+
+| Label width | 203 dpi printer | 300 dpi printer |
+|---|---|---|
+| 40 mm | 320 dots | 472 dots |
+| 50 mm | 400 dots | 590 dots |
+| 100 mm | 800 dots | 1181 dots |
+| 4 inch | 812 dots | 1200 dots |
+
+Most label printers are 203 dpi. On a 300 dpi printer, the same text size
+looks smaller, so use sizes about one and a half times larger.
+
+| Option | Values |
+|---|---|
+| `labelHeight` | The length of one label, in dots. Leave it out for continuous paper; the label is then as long as the receipt. Anything longer than the label does not print. |
+| `labelGap` | TSC only: the gap between two labels, in mm (default 2). |
+| `darkness` | 0 to 30 for Zebra, 0 to 15 for TSC. Leave it out to keep the printer's own setting. |
+| `dpi` | 203 (default), 300 or 600. TSC printers need it to work out the label size. |
+
+```php
+// 50 x 30 mm labels on a TSC printer
+$renderer = new Renderer(options: new PrinterOptions(language: 'tspl', labelHeight: 240));
+$rendered = $renderer->render(Receipt::make(400)->title('ڤیتامین C')->row('نرخ', '12,500'));
+```
+
+In the Laravel config, the same settings are called `language`,
+`label_height`, `label_gap`, `darkness` and `dpi`. The `cut`, `feed` and
+cash drawer settings are only for receipt printers.
+
 ### Testing your printer
 
 Print a test page to check that everything works:
@@ -344,6 +391,7 @@ Print a test page to check that everything works:
 ```bash
 php artisan kurdish-escpos:test-print 192.168.1.50
 php artisan kurdish-escpos:test-print /dev/usb/lp0 --width=384
+php artisan kurdish-escpos:test-print 192.168.1.60 --language=zpl --width=812
 ```
 
 The test page has the words «ڕاست» (right) and «چەپ» (left) at the two
@@ -367,11 +415,12 @@ kitchen, one at the bar. Give each printer a name in
     'cashier' => ['host' => '192.168.1.50'],
     'kitchen' => ['host' => '192.168.1.51', 'width' => 384],
     'bar' => ['path' => '/dev/usb/lp0', 'image' => 'column', 'cut' => 'none'],
+    'labels' => ['host' => '192.168.1.60', 'language' => 'zpl', 'width' => 812],
 ],
 ```
 
-Each printer can have its own `width`, `font`, `image`, `cut`, `feed` and
-`drawer_pin`. The receipt is laid out again for each printer, so the same
+Each printer can have its own `width`, `font`, `image`, `cut`, `feed`,
+`drawer_pin`, `language` and label settings. The receipt is laid out again for each printer, so the same
 receipt fits both 80 mm and 58 mm paper.
 
 Print on one printer:

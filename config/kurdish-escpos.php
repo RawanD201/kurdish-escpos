@@ -62,6 +62,16 @@ return [
     | "cut"         "partial", "full" or "none" (no cutter).
     | "feed"        Lines of paper fed before the cut.
     | "drawer_pin"  Cash drawer connector pin: 2 or 5.
+    | "language"    "escpos" for receipt printers, "zpl" for Zebra or "tspl"
+    |               for TSC label printers.
+    |
+    | Label printers (Zebra and TSC) also accept:
+    |
+    | "label_height" Label length in dots; leave it out for continuous paper.
+    | "label_gap"    TSC only: gap between labels in mm (default 2).
+    | "darkness"     0-30 for Zebra, 0-15 for TSC; leave it out to keep the
+    |                printer's own setting.
+    | "dpi"          203, 300 or 600 (default 203).
     |
     */
     'printers' => [
@@ -71,6 +81,7 @@ return [
             'port' => (int) env('KURDISH_ESCPOS_PRINTER_PORT', 9100),
             'path' => env('KURDISH_ESCPOS_PRINTER_PATH'),
             'timeout' => 10,
+            'language' => env('KURDISH_ESCPOS_LANGUAGE', 'escpos'),
             'image' => env('KURDISH_ESCPOS_IMAGE', 'raster'),
             'cut' => env('KURDISH_ESCPOS_CUT', 'partial'),
             'feed' => 4,
@@ -86,6 +97,13 @@ return [
         //     'path' => '/dev/usb/lp0',
         //     'image' => 'column',
         //     'cut' => 'none',
+        // ],
+
+        // 'labels' => [
+        //     'host' => '192.168.1.60',
+        //     'language' => 'zpl',
+        //     'width' => 812,          // 4 inch labels at 203 dpi
+        //     'label_height' => 1218,  // 6 inch labels
         // ],
 
     ],

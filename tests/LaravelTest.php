@@ -98,6 +98,28 @@ final class LaravelTest extends TestCase
         }
     }
 
+    public function test_label_printers_from_config_and_test_print(): void
+    {
+        $device = (string) tempnam(sys_get_temp_dir(), 'kurdish-escpos-test-');
+        config(['kurdish-escpos.printers' => [
+            'default' => ['path' => $device, 'language' => 'tspl', 'width' => 400, 'label_height' => 240, 'darkness' => 8],
+        ]]);
+
+        try {
+            KurdishEscposFacade::print(KurdishEscposFacade::receipt()->text('سوپاس'));
+            $this->assertStringStartsWith("SIZE 50 mm,30 mm\nGAP 2 mm,0 mm\nDENSITY 8\nCLS\nBITMAP 0,0,50,", (string) file_get_contents($device));
+
+            $this->artisan('kurdish-escpos:test-print', ['printer' => $device, '--language' => 'zpl', '--width' => 812])
+                ->assertSuccessful();
+            $this->assertStringStartsWith("^XA\n^PW812\n", (string) file_get_contents($device));
+
+            $this->artisan('kurdish-escpos:test-print', ['printer' => $device, '--language' => 'epl'])
+                ->assertFailed();
+        } finally {
+            @unlink($device);
+        }
+    }
+
     public function test_named_printers_from_config(): void
     {
         [$cashier, $kitchen] = [(string) tempnam(sys_get_temp_dir(), 'kurdish-escpos-test-'), (string) tempnam(sys_get_temp_dir(), 'kurdish-escpos-test-')];

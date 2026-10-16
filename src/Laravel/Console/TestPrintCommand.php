@@ -24,11 +24,12 @@ class TestPrintCommand extends Command
                             {printer? : A configured printer name, an IP address (192.168.1.50 or 192.168.1.50:9100), or a device path (/dev/usb/lp0)}
                             {--all : Print the test page on every configured printer at once}
                             {--width= : Printable width in dots, such as 576, 512 or 384 (for an address or path)}
+                            {--language= : Printer language: escpos, zpl for Zebra or tspl for TSC (for an address or path)}
                             {--image= : Picture command: raster, or column for older printers (for an address or path)}
                             {--cut= : Cut: partial, full or none (for an address or path)}
                             {--preview= : Also save the test page to this PNG file}';
 
-    protected $description = 'Print a test page to check one or more receipt printers';
+    protected $description = 'Print a test page to check one or more receipt or label printers';
 
     public function handle(KurdishEscpos $escpos, Repository $config): int
     {
@@ -89,15 +90,19 @@ class TestPrintCommand extends Command
     {
         $width = (int) ($this->option('width') ?: $config->get('kurdish-escpos.width', Receipt::WIDTH_80MM));
         $options = new PrinterOptions(
-            $this->option('image') ?: PrinterOptions::IMAGE_RASTER,
-            $this->option('cut') ?: PrinterOptions::CUT_PARTIAL,
+            image: $this->option('image') ?: PrinterOptions::IMAGE_RASTER,
+            cut: $this->option('cut') ?: PrinterOptions::CUT_PARTIAL,
+            language: $this->option('language') ?: PrinterOptions::LANGUAGE_ESCPOS,
         );
+        $mode = $options->isLabel() ? $options->language : $options->image;
         $rendered = (new Renderer($config->get('kurdish-escpos.font') ?: null, $options))
-            ->render(TestPage::receipt($width, "{$width} dots · {$options->image} · ".self::version()));
+            ->render(TestPage::receipt($width, "{$width} dots · {$mode} · ".self::version()));
 
         $this->savePreview($rendered->png);
-        $this->printer($target)->send($rendered->escpos);
-        $this->components->info('Test page sent. If nothing printed, or the printer printed symbols, try --image=column.');
+        $this->printer($target)->send($rendered->commands());
+        $this->components->info($options->isLabel()
+            ? 'Test page sent. If it is cut off, set --width to the label width in dots.'
+            : 'Test page sent. If nothing printed, or the printer printed symbols, try --image=column.');
 
         return self::SUCCESS;
     }

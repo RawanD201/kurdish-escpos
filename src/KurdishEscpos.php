@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Rawand\KurdishEscpos;
 
-use Rawand\KurdishEscpos\EscPos\PrinterOptions;
 use Rawand\KurdishEscpos\Exceptions\PrinterException;
 use Rawand\KurdishEscpos\Printers\ParallelSender;
 use Rawand\KurdishEscpos\Printers\Printer;
@@ -161,7 +160,7 @@ class KurdishEscpos
         foreach ($targets as $name => [$setup, $data]) {
             $key = spl_object_id($this->rendererFor($setup)).':'.($setup->width ?? '').':'.md5(serialize($data));
             $rendered[$name] = $cache[$key] ??= $this->renderFor($setup, $data);
-            $jobs[$name] = [$setup->printer, $rendered[$name]->escpos];
+            $jobs[$name] = [$setup->printer, $rendered[$name]->commands()];
         }
 
         return new PrintResult($rendered, array_filter(ParallelSender::send($jobs)));
@@ -194,17 +193,12 @@ class KurdishEscpos
     {
         $font = $setup->font ?? $this->renderer->font();
         $options = $setup->options ?? $this->renderer->options();
-        if ($font === $this->renderer->font() && self::sameOptions($options, $this->renderer->options())) {
+        // Options hold only scalar settings, so == compares every one of them.
+        if ($font === $this->renderer->font() && $options == $this->renderer->options()) {
             return $this->renderer;
         }
-        $key = ($font instanceof Font ? 'font:'.spl_object_id($font) : 'path:'.$font)
-            ."|{$options->image}|{$options->cut}|{$options->feed}|{$options->drawerPin}";
+        $key = ($font instanceof Font ? 'font:'.spl_object_id($font) : 'path:'.$font).'|'.serialize($options);
 
         return $this->renderers[$key] ??= new Renderer($font, $options);
-    }
-
-    private static function sameOptions(PrinterOptions $a, PrinterOptions $b): bool
-    {
-        return [$a->image, $a->cut, $a->feed, $a->drawerPin] === [$b->image, $b->cut, $b->feed, $b->drawerPin];
     }
 }

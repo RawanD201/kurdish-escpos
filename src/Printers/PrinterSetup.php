@@ -15,7 +15,7 @@ final class PrinterSetup
 {
     /**
      * @param  int|null  $width  Printable width in dots; the receipt is laid out for this width.
-     * @param  PrinterOptions|null  $options  Image command, cut and feed settings.
+     * @param  PrinterOptions|null  $options  Printer language, image command, cut, feed and label settings.
      * @param  Font|string|null  $font  A font, or the path to a .ttf file.
      */
     public function __construct(

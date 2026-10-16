@@ -123,6 +123,71 @@ final class Bitmap
     }
 
     /**
+     * Returns the commands for the printer's language: ESC/POS for receipt
+     * printers, ZPL for Zebra or TSPL for TSC label printers.
+     */
+    public function toCommands(?PrinterOptions $options = null, bool $openDrawer = false): string
+    {
+        $options ??= new PrinterOptions;
+
+        return match ($options->language) {
+            PrinterOptions::LANGUAGE_ZPL => $this->toZpl($options),
+            PrinterOptions::LANGUAGE_TSPL => $this->toTspl($options),
+            default => $this->toEscPos($options, $openDrawer),
+        };
+    }
+
+    /**
+     * Returns a ZPL label for Zebra printers. The image is sent as a ^GFA
+     * graphic field, compressed with ZPL's ASCII compression: "," ends a row
+     * whose remaining dots are white, and ":" repeats the previous row.
+     */
+    public function toZpl(?PrinterOptions $options = null): string
+    {
+        $options ??= new PrinterOptions(language: PrinterOptions::LANGUAGE_ZPL);
+        $data = '';
+        $previous = null;
+        for ($y = 0; $y < $this->height; $y++) {
+            $row = strtoupper(bin2hex(substr($this->rows, $y * $this->stride, $this->stride)));
+            if ($row === $previous) {
+                $data .= ':';
+
+                continue;
+            }
+            $previous = $row;
+            $trimmed = rtrim($row, '0');
+            $data .= strlen($trimmed) === strlen($row) ? $row : $trimmed.',';
+        }
+        $total = $this->stride * $this->height;
+        $out = $options->darkness === null ? '' : sprintf('~SD%02d', $options->darkness);
+
+        return $out."^XA\n^PW{$this->width}\n^LL".($options->labelHeight ?? $this->height)."\n"
+            ."^FO0,0^GFA,{$total},{$total},{$this->stride},{$data}^FS\n^XZ\n";
+    }
+
+    /**
+     * Returns a TSPL label for TSC printers. In TSPL bitmaps a 0 bit is a
+     * black dot, so the image bits are inverted.
+     */
+    public function toTspl(?PrinterOptions $options = null): string
+    {
+        $options ??= new PrinterOptions(language: PrinterOptions::LANGUAGE_TSPL);
+        $mm = fn (int $dots): string => rtrim(rtrim(number_format($dots * 25.4 / $options->dpi, 1, '.', ''), '0'), '.');
+        $height = $options->labelHeight ?? $this->height;
+        $gap = $options->labelHeight === null ? '0' : rtrim(rtrim(number_format($options->labelGap, 1, '.', ''), '0'), '.');
+
+        $out = 'SIZE '.$mm($this->width).' mm,'.$mm($height)." mm\n";
+        $out .= "GAP {$gap} mm,0 mm\n";
+        if ($options->darkness !== null) {
+            $out .= "DENSITY {$options->darkness}\n";
+        }
+        $out .= "CLS\n";
+        $out .= "BITMAP 0,0,{$this->stride},{$this->height},0,".(~$this->rows)."\n";
+
+        return $out."PRINT 1,1\n";
+    }
+
+    /**
      * Returns the printer command stream: initialize, the image, paper feed,
      * cut and, if requested, the pulse that opens the cash drawer.
      */
@@ -245,5 +310,48 @@ final class Bitmap
         }
 
         return new self($width, $height, $rows);
+    }
+
+    /** Reads back the image from a ZPL label produced by toZpl(). Used by the tests. */
+    public static function fromZpl(string $zpl): self
+    {
+        if (! preg_match('/\^PW(\d+).*?\^GFA,(\d+),\d+,(\d+),([0-9A-F,:]*)\^FS/s', $zpl, $m)) {
+            throw new RenderException('No ^GFA graphic field found.');
+        }
+        [$width, $total, $stride, $data] = [(int) $m[1], (int) $m[2], (int) $m[3], $m[4]];
+        $rows = '';
+        $previous = str_repeat('0', 2 * $stride);
+        $row = '';
+        for ($i = 0, $n = strlen($data); $i < $n; $i++) {
+            $c = $data[$i];
+            if ($c === ':') {
+                $rows .= hex2bin($previous);
+
+                continue;
+            }
+            if ($c === ',') {
+                $row = str_pad($row, 2 * $stride, '0');
+            } else {
+                $row .= $c;
+            }
+            if (strlen($row) === 2 * $stride) {
+                $rows .= hex2bin($row);
+                [$previous, $row] = [$row, ''];
+            }
+        }
+
+        return new self($width, intdiv($total, $stride), $rows);
+    }
+
+    /** Reads back the image from a TSPL label produced by toTspl(). Used by the tests. */
+    public static function fromTspl(string $tspl): self
+    {
+        if (! preg_match('/BITMAP 0,0,(\d+),(\d+),0,/', $tspl, $m, PREG_OFFSET_CAPTURE)) {
+            throw new RenderException('No BITMAP command found.');
+        }
+        [$stride, $height] = [(int) $m[1][0], (int) $m[2][0]];
+        $start = $m[0][1] + strlen($m[0][0]);
+
+        return new self($stride * 8, $height, ~substr($tspl, $start, $stride * $height));
     }
 }

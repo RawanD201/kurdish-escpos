@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Rawand\KurdishEscpos;
 
 /**
- * The result of rendering a receipt: a PNG preview and the ESC/POS command
- * stream for the printer. Both contain exactly the same dots.
+ * The result of rendering a receipt: a PNG preview and the command stream
+ * for the printer. Both contain exactly the same dots.
+ *
+ * The $escpos property keeps its name for compatibility; for a Zebra or TSC
+ * printer it holds ZPL or TSPL commands instead of ESC/POS.
  */
 final class RenderedReceipt
 {
@@ -14,6 +17,12 @@ final class RenderedReceipt
         public readonly string $png,
         public readonly string $escpos,
     ) {}
+
+    /** The printer commands, in the language set in the printer options. */
+    public function commands(): string
+    {
+        return $this->escpos;
+    }
 
     /** Returns the preview as a data URI, suitable for an HTML img element. */
     public function pngDataUri(): string

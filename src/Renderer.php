@@ -18,7 +18,8 @@ use Rawand\KurdishEscpos\Text\TextLayout;
 use Throwable;
 
 /**
- * Renders receipts with GD and encodes them as ESC/POS commands.
+ * Renders receipts with GD and encodes them as printer commands: ESC/POS
+ * for receipt printers, or ZPL and TSPL for Zebra and TSC label printers.
  *
  * Each item is drawn into its own horizontal band and the bands are stacked.
  * Text is drawn at four times the target resolution and scaled down, which
@@ -32,7 +33,7 @@ final class Renderer
 
     public const DEFAULT_QR_SIZE = 240;
 
-    private const MAX_WIDTH = 2048;
+    private const MAX_WIDTH = 2560; // a 4.1-inch label printer at 600 dpi is about 2460 dots
 
     private const FEED_LINE = 30;
 
@@ -66,7 +67,7 @@ final class Renderer
      * @param  Font|string|null  $font  A font, or the path to a .ttf file. When null, the
      *                                  bundled Vazirmatn font is used. Vazirmatn is also
      *                                  the fallback for characters the font lacks.
-     * @param  PrinterOptions|null  $options  Image command, cut and feed settings for the printer.
+     * @param  PrinterOptions|null  $options  Printer language, image command, cut, feed and label settings.
      */
     public function __construct(Font|string|null $font = null, ?PrinterOptions $options = null)
     {
@@ -93,7 +94,7 @@ final class Renderer
         }
         $bitmap = Bitmap::fromImage($this->draw($data));
 
-        return new RenderedReceipt($bitmap->toPng(), $bitmap->toEscPos($this->options, $drawer));
+        return new RenderedReceipt($bitmap->toPng(), $bitmap->toCommands($this->options, $drawer));
     }
 
     /**

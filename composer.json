@@ -1,6 +1,6 @@
 {
     "name": "rawand201/kurdish-escpos",
-    "description": "Print correctly shaped Kurdish (Sorani and Badini), Arabic and English receipts on ESC/POS thermal printers. Pure PHP, no binaries.",
+    "description": "Print correctly shaped Kurdish (Sorani and Badini), Arabic and English receipts and labels on ESC/POS thermal printers and Zebra (ZPL) and TSC (TSPL) label printers. Pure PHP, no binaries.",
     "type": "library",
     "license": "MIT",
     "keywords": [
@@ -14,6 +14,10 @@
         "esc-pos",
         "receipt",
         "thermal-printer",
+        "zpl",
+        "zebra",
+        "tspl",
+        "label-printer",
         "pos",
         "harfbuzz",
         "laravel"
