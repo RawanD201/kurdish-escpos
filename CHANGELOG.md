@@ -7,14 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-16
+
+First release.
+
 ### Added
 
 - Receipt builder with text, titles, item rows, dividers, QR codes and feeds,
-  for 80 mm and 58 mm paper.
+  for 80 mm and 58 mm paper. Item rows follow the direction of the item name.
 - Pure PHP text shaping based on the font's OpenType rules, matching HarfBuzz
   output for Kurdish (Sorani and Badini), Arabic and Latin text.
 - Unicode Bidirectional Algorithm for mixed right-to-left and left-to-right
   text.
+- Support for Sorani, Badini, Hawrami and the other Kurdish dialects, in Arabic
+  and Latin script.
 - Rendering with GD to a PNG preview and an ESC/POS raster command stream.
 - Network (TCP) and file-based (USB device or Windows shared) printers.
 - Support for custom TrueType fonts, with automatic fallback to the bundled
@@ -22,3 +28,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Font compatibility check, available as an Artisan command and as a
   standalone script.
 - Laravel service provider, facade and configuration file.
+
+[Unreleased]: https://github.com/RawanD201/kurdish-escpos/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/RawanD201/kurdish-escpos/releases/tag/v0.1.0
