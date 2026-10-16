@@ -97,4 +97,42 @@ final class LaravelTest extends TestCase
             @unlink($preview);
         }
     }
+
+    public function test_named_printers_from_config(): void
+    {
+        [$cashier, $kitchen] = [(string) tempnam(sys_get_temp_dir(), 'kurdish-escpos-test-'), (string) tempnam(sys_get_temp_dir(), 'kurdish-escpos-test-')];
+        config([
+            'kurdish-escpos.default' => 'cashier',
+            'kurdish-escpos.printers' => [
+                'cashier' => ['path' => $cashier],
+                'kitchen' => ['path' => $kitchen, 'width' => 384, 'image' => 'column'],
+                'unused' => ['host' => null],
+            ],
+        ]);
+
+        try {
+            $this->assertSame(['cashier', 'kitchen'], KurdishEscposFacade::printerNames());
+
+            $result = KurdishEscposFacade::print(KurdishEscposFacade::receipt()->text('سوپاس'), ['cashier', 'kitchen']);
+            $this->assertTrue($result->ok());
+            $this->assertStringContainsString("\x1D\x76\x30\x00\x48\x00", (string) file_get_contents($cashier), 'raster, 576 dots');
+            $this->assertStringContainsString("\x1B\x2A\x21\x80\x01", (string) file_get_contents($kitchen), 'column, 384 dots');
+
+            file_put_contents($kitchen, '');
+            KurdishEscposFacade::print(KurdishEscposFacade::receipt()->text('سوپاس'));
+            $this->assertSame('', file_get_contents($kitchen), 'without a name, only the default printer prints');
+
+            $this->artisan('kurdish-escpos:test-print', ['printer' => 'kitchen'])->assertSuccessful();
+            $this->assertNotSame('', file_get_contents($kitchen));
+
+            file_put_contents($cashier, '');
+            file_put_contents($kitchen, '');
+            $this->artisan('kurdish-escpos:test-print', ['--all' => true])->assertSuccessful();
+            $this->assertNotSame('', file_get_contents($cashier));
+            $this->assertNotSame('', file_get_contents($kitchen));
+        } finally {
+            @unlink($cashier);
+            @unlink($kitchen);
+        }
+    }
 }

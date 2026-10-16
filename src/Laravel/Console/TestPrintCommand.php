@@ -6,6 +6,7 @@ namespace Rawand\KurdishEscpos\Laravel\Console;
 
 use Composer\InstalledVersions;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Config\Repository;
 use InvalidArgumentException;
 use Rawand\KurdishEscpos\EscPos\PrinterOptions;
 use Rawand\KurdishEscpos\Exceptions\KurdishEscposException;
@@ -20,64 +21,110 @@ use Rawand\KurdishEscpos\TestPage;
 class TestPrintCommand extends Command
 {
     protected $signature = 'kurdish-escpos:test-print
-                            {printer? : IP address (192.168.1.50 or 192.168.1.50:9100) or device path (/dev/usb/lp0); defaults to the configured printer}
-                            {--width= : Printable width in dots, such as 576, 512 or 384}
-                            {--image= : Picture command: raster, or column for older printers}
-                            {--cut= : Cut: partial, full or none}
+                            {printer? : A configured printer name, an IP address (192.168.1.50 or 192.168.1.50:9100), or a device path (/dev/usb/lp0)}
+                            {--all : Print the test page on every configured printer at once}
+                            {--width= : Printable width in dots, such as 576, 512 or 384 (for an address or path)}
+                            {--image= : Picture command: raster, or column for older printers (for an address or path)}
+                            {--cut= : Cut: partial, full or none (for an address or path)}
                             {--preview= : Also save the test page to this PNG file}';
 
-    protected $description = 'Print a test page to check a receipt printer';
+    protected $description = 'Print a test page to check one or more receipt printers';
 
-    public function handle(): int
+    public function handle(KurdishEscpos $escpos, Repository $config): int
     {
-        $config = $this->laravel['config'];
-        $printerConfig = $config->get('kurdish-escpos.printer', []);
-        $width = (int) ($this->option('width') ?: $config->get('kurdish-escpos.width', Receipt::WIDTH_80MM));
+        $target = $this->argument('printer');
 
         try {
-            $options = PrinterOptions::fromArray([
-                ...$printerConfig,
-                'image' => $this->option('image') ?: ($printerConfig['image'] ?? PrinterOptions::IMAGE_RASTER),
-                'cut' => $this->option('cut') ?: ($printerConfig['cut'] ?? PrinterOptions::CUT_PARTIAL),
-            ]);
-            $printer = $this->printer($printerConfig);
-            $version = InstalledVersions::getPrettyVersion('rawand201/kurdish-escpos') ?? 'dev';
-            $rendered = (new Renderer($config->get('kurdish-escpos.font') ?: null, $options))
-                ->render(TestPage::receipt($width, "{$width} dots · {$options->image} · {$version}"));
-
-            if ($preview = $this->option('preview')) {
-                $rendered->savePng($preview);
-                $this->components->info("Test page saved to {$preview}");
+            if ($this->option('all')) {
+                return $this->printNamed($escpos, $escpos->printerNames());
             }
-            $printer->send($rendered->escpos);
+            if (! is_string($target) || $target === '') {
+                return $this->printNamed($escpos, [$escpos->defaultPrinterName()]);
+            }
+            if (in_array($target, $escpos->printerNames(), true)) {
+                return $this->printNamed($escpos, [$target]);
+            }
+
+            return $this->printAddress($target, $config);
         } catch (KurdishEscposException|InvalidArgumentException $e) {
             $this->components->error($e->getMessage());
 
             return self::FAILURE;
         }
+    }
 
+    /**
+     * Prints on configured printers, all at the same time.
+     *
+     * @param  list<string>  $names
+     */
+    private function printNamed(KurdishEscpos $escpos, array $names): int
+    {
+        if ($names === []) {
+            throw new InvalidArgumentException('No printers are configured.');
+        }
+        // The test page shows each printer's name, so each gets its own page;
+        // all pages are still sent at the same time.
+        $receipts = [];
+        foreach ($names as $name) {
+            $width = $escpos->receipt($name)->toArray()['width'];
+            $receipts[$name] = TestPage::receipt($width, "{$name} · {$width} dots · ".self::version());
+        }
+        $result = count($names) === 1
+            ? $escpos->print($receipts[$names[0]], [$names[0]])
+            : $escpos->printEach($receipts);
+
+        foreach ($result->printed() as $printed) {
+            $this->components->info("Test page sent to {$printed}.");
+        }
+        foreach ($result->failures() as $printer => $error) {
+            $this->components->error("{$printer}: {$error->getMessage()}");
+        }
+        $this->savePreview($result->rendered()->png);
+
+        return $result->ok() ? self::SUCCESS : self::FAILURE;
+    }
+
+    private function printAddress(string $target, Repository $config): int
+    {
+        $width = (int) ($this->option('width') ?: $config->get('kurdish-escpos.width', Receipt::WIDTH_80MM));
+        $options = new PrinterOptions(
+            $this->option('image') ?: PrinterOptions::IMAGE_RASTER,
+            $this->option('cut') ?: PrinterOptions::CUT_PARTIAL,
+        );
+        $rendered = (new Renderer($config->get('kurdish-escpos.font') ?: null, $options))
+            ->render(TestPage::receipt($width, "{$width} dots · {$options->image} · ".self::version()));
+
+        $this->savePreview($rendered->png);
+        $this->printer($target)->send($rendered->escpos);
         $this->components->info('Test page sent. If nothing printed, or the printer printed symbols, try --image=column.');
 
         return self::SUCCESS;
     }
 
-    /** @param  array<string, mixed>  $config */
-    private function printer(array $config): Printer
+    private function printer(string $target): Printer
     {
-        $target = $this->argument('printer');
-        if (! is_string($target) || $target === '') {
-            $printer = $this->laravel->make(KurdishEscpos::class)->printer();
-
-            return $printer ?? throw new InvalidArgumentException('No printer given and no default printer configured (set KURDISH_ESCPOS_PRINTER_HOST).');
-        }
         if (str_starts_with($target, '/') || str_starts_with($target, '\\\\')) {
             return new FilePrinter($target);
         }
-        $port = (int) ($config['port'] ?? 9100);
+        $port = 9100;
         if (preg_match('/^(.+):(\d+)$/', $target, $m) && ! str_contains($m[1], ':')) {
             [$target, $port] = [$m[1], (int) $m[2]];
         }
 
-        return new NetworkPrinter($target, $port, (float) ($config['timeout'] ?? 10));
+        return new NetworkPrinter($target, $port);
+    }
+
+    private function savePreview(string $png): void
+    {
+        if ($preview = $this->option('preview')) {
+            file_put_contents($preview, $png);
+            $this->components->info("Test page saved to {$preview}");
+        }
+    }
+
+    private static function version(): string
+    {
+        return InstalledVersions::getPrettyVersion('rawand201/kurdish-escpos') ?? 'dev';
     }
 }

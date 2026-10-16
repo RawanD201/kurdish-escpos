@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Several named printers, each with its own width, font and settings: the
+  `printers` list in the configuration, or `PrinterSetup` without Laravel.
+- Printing on several printers at the same time with
+  `print($receipt, ['cashier', 'kitchen'])`. Network printers receive the
+  receipt in parallel, and a printer that fails does not stop the others.
+- `printEach()` prints different receipts on different printers at once.
+- `PrintResult` reports which printers printed and which failed.
+- `kurdish-escpos:test-print` accepts a printer name and `--all`.
+
+### Changed
+
+- `print()` returns a `PrintResult` instead of a `RenderedReceipt`. Use
+  `$result->rendered()` to get the PNG preview and the printer bytes.
+- The configuration has `default` and `printers` instead of a single
+  `printer` entry. Configuration files published with the old `printer`
+  entry keep working.
+
 ## [0.2.0] - 2026-10-16
 
 ### Added

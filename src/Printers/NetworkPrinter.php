@@ -18,10 +18,23 @@ final class NetworkPrinter implements Printer
         private readonly float $timeout = 10.0,
     ) {}
 
-    public function send(string $bytes): void
+    /** The stream address, such as tcp://192.168.1.50:9100. */
+    public function address(): string
     {
         $host = str_contains($this->host, ':') ? "[{$this->host}]" : $this->host; // IPv6
-        $address = "tcp://{$host}:{$this->port}";
+
+        return "tcp://{$host}:{$this->port}";
+    }
+
+    /** Seconds to wait for the connection and for each write. */
+    public function timeout(): float
+    {
+        return $this->timeout;
+    }
+
+    public function send(string $bytes): void
+    {
+        $address = $this->address();
 
         $socket = @stream_socket_client($address, $errno, $error, $this->timeout);
         if ($socket === false) {

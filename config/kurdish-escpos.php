@@ -39,27 +39,55 @@ return [
     | Default printer
     |--------------------------------------------------------------------------
     |
-    | Set "host" for a network printer (most models listen on port 9100), or
-    | "path" for a printer exposed as a file, such as /dev/usb/lp0 on Linux or
-    | \\localhost\XPrinter on Windows. Leave both empty to pass a printer
-    | explicitly when printing.
-    |
-    | "image" is the picture command: "raster" works on most printers; use
-    | "column" for older printers that print nothing or print symbols. "cut"
-    | is "partial", "full" or "none" (for printers without a cutter). "feed"
-    | is the number of lines fed before the cut, and "drawer_pin" (2 or 5) is
-    | the connector pin of the cash drawer.
+    | The name of the printer used when you print without naming one.
     |
     */
-    'printer' => [
-        'host' => env('KURDISH_ESCPOS_PRINTER_HOST'),
-        'port' => (int) env('KURDISH_ESCPOS_PRINTER_PORT', 9100),
-        'path' => env('KURDISH_ESCPOS_PRINTER_PATH'),
-        'timeout' => 10,
-        'image' => env('KURDISH_ESCPOS_IMAGE', 'raster'),
-        'cut' => env('KURDISH_ESCPOS_CUT', 'partial'),
-        'feed' => 4,
-        'drawer_pin' => 2,
+    'default' => env('KURDISH_ESCPOS_PRINTER', 'default'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Printers
+    |--------------------------------------------------------------------------
+    |
+    | Each printer has a name. Set "host" for a network printer (most models
+    | listen on port 9100), or "path" for a printer exposed as a file, such as
+    | /dev/usb/lp0 on Linux or \\localhost\XPrinter on Windows.
+    |
+    | Every printer can also have its own settings:
+    |
+    | "width"       Printable width in dots; the receipt is laid out for it.
+    | "font"        Path to a .ttf font.
+    | "image"       Picture command: "raster" works on most printers; use
+    |               "column" for older printers that print nothing or symbols.
+    | "cut"         "partial", "full" or "none" (no cutter).
+    | "feed"        Lines of paper fed before the cut.
+    | "drawer_pin"  Cash drawer connector pin: 2 or 5.
+    |
+    */
+    'printers' => [
+
+        'default' => [
+            'host' => env('KURDISH_ESCPOS_PRINTER_HOST'),
+            'port' => (int) env('KURDISH_ESCPOS_PRINTER_PORT', 9100),
+            'path' => env('KURDISH_ESCPOS_PRINTER_PATH'),
+            'timeout' => 10,
+            'image' => env('KURDISH_ESCPOS_IMAGE', 'raster'),
+            'cut' => env('KURDISH_ESCPOS_CUT', 'partial'),
+            'feed' => 4,
+            'drawer_pin' => 2,
+        ],
+
+        // 'kitchen' => [
+        //     'host' => '192.168.1.51',
+        //     'width' => 384,
+        // ],
+
+        // 'bar' => [
+        //     'path' => '/dev/usb/lp0',
+        //     'image' => 'column',
+        //     'cut' => 'none',
+        // ],
+
     ],
 
 ];

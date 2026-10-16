@@ -8,9 +8,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 use Rawand\KurdishEscpos\EscPos\PrinterOptions;
 use Rawand\KurdishEscpos\KurdishEscpos;
-use Rawand\KurdishEscpos\Printers\FilePrinter;
-use Rawand\KurdishEscpos\Printers\NetworkPrinter;
-use Rawand\KurdishEscpos\Printers\Printer;
+use Rawand\KurdishEscpos\Printers\PrinterSetup;
 use Rawand\KurdishEscpos\Receipt;
 use Rawand\KurdishEscpos\Renderer;
 
@@ -20,17 +18,30 @@ class KurdishEscposServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../../config/kurdish-escpos.php', 'kurdish-escpos');
 
-        $this->app->singleton(Renderer::class, fn (Application $app) => new Renderer(
-            $app['config']->get('kurdish-escpos.font') ?: null,
-            PrinterOptions::fromArray($app['config']->get('kurdish-escpos.printer', [])),
-        ));
+        $this->app->singleton(Renderer::class, function (Application $app) {
+            $config = (array) $app['config']->get('kurdish-escpos', []);
+            $default = self::printerConfigs($config)[self::defaultName($config)] ?? [];
 
-        $this->app->singleton(KurdishEscpos::class, fn (Application $app) => new KurdishEscpos(
-            $app->make(Renderer::class),
-            self::defaultPrinter($app['config']->get('kurdish-escpos.printer', [])),
-            (int) $app['config']->get('kurdish-escpos.width', Receipt::WIDTH_80MM),
-            $app['config']->get('kurdish-escpos.margin'),
-        ));
+            return new Renderer(($config['font'] ?? null) ?: null, PrinterOptions::fromArray($default));
+        });
+
+        $this->app->singleton(KurdishEscpos::class, function (Application $app) {
+            $config = (array) $app['config']->get('kurdish-escpos', []);
+            $printers = [];
+            foreach (self::printerConfigs($config) as $name => $printerConfig) {
+                if ($setup = PrinterSetup::fromArray($printerConfig)) {
+                    $printers[$name] = $setup;
+                }
+            }
+
+            return new KurdishEscpos(
+                $app->make(Renderer::class),
+                $printers,
+                (int) ($config['width'] ?? Receipt::WIDTH_80MM),
+                $config['margin'] ?? null,
+                self::defaultName($config),
+            );
+        });
     }
 
     public function boot(): void
@@ -44,16 +55,31 @@ class KurdishEscposServiceProvider extends ServiceProvider
         }
     }
 
-    /** @param  array{host?: ?string, port?: int, path?: ?string, timeout?: float}  $config */
-    private static function defaultPrinter(array $config): ?Printer
+    /**
+     * The printers from the configuration. A configuration published before
+     * version 0.3 has a single "printer" entry, which becomes "default".
+     *
+     * @param  array<string, mixed>  $config
+     * @return array<string, array<string, mixed>>
+     */
+    private static function printerConfigs(array $config): array
     {
-        if (! empty($config['host'])) {
-            return new NetworkPrinter($config['host'], (int) ($config['port'] ?? 9100), (float) ($config['timeout'] ?? 10));
+        if (isset($config['printer']) && is_array($config['printer'])) {
+            return ['default' => $config['printer']];
         }
-        if (! empty($config['path'])) {
-            return new FilePrinter($config['path']);
+        $printers = [];
+        foreach ((array) ($config['printers'] ?? []) as $name => $printer) {
+            if (is_array($printer)) {
+                $printers[(string) $name] = $printer;
+            }
         }
 
-        return null;
+        return $printers;
+    }
+
+    /** @param  array<string, mixed>  $config */
+    private static function defaultName(array $config): string
+    {
+        return isset($config['printer']) ? 'default' : (string) ($config['default'] ?? 'default');
     }
 }

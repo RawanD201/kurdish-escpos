@@ -60,6 +60,8 @@ final class Renderer
 
     private readonly PrinterOptions $options;
 
+    private readonly Font $font;
+
     /**
      * @param  Font|string|null  $font  A font, or the path to a .ttf file. When null, the
      *                                  bundled Vazirmatn font is used. Vazirmatn is also
@@ -72,6 +74,7 @@ final class Renderer
             throw new RenderException('The PHP GD extension is required to draw receipts.');
         }
         $main = is_string($font) ? Font::load($font) : ($font ?? Font::default());
+        $this->font = $main;
         $fallback = Font::default();
         $this->layout = new TextLayout($main === $fallback ? [$main] : [$main, $fallback]);
         $this->rasterizer = new Rasterizer;
@@ -83,7 +86,7 @@ final class Renderer
      */
     public function render(Receipt|array|string $receipt): RenderedReceipt
     {
-        $data = $this->normalize($receipt);
+        $data = self::parse($receipt);
         $drawer = $data['drawer'] ?? false;
         if (! is_bool($drawer)) {
             throw new RenderException('"drawer" must be true or false.');
@@ -101,7 +104,7 @@ final class Renderer
      */
     public function draw(Receipt|array|string $receipt): GdImage
     {
-        $receipt = $this->normalize($receipt);
+        $receipt = self::parse($receipt);
         $width = $receipt['width'] ?? Receipt::WIDTH_80MM;
         $margin = $receipt['margin'] ?? self::DEFAULT_MARGIN;
         if (! is_int($width) || $width < 1 || $width > self::MAX_WIDTH) {
@@ -138,11 +141,25 @@ final class Renderer
         return $image;
     }
 
+    /** The main font. */
+    public function font(): Font
+    {
+        return $this->font;
+    }
+
+    public function options(): PrinterOptions
+    {
+        return $this->options;
+    }
+
     /**
+     * Converts a receipt builder, array or JSON string to the array format and
+     * checks the top-level fields.
+     *
      * @param  Receipt|array<string, mixed>|string  $receipt
      * @return array<string, mixed>
      */
-    private function normalize(Receipt|array|string $receipt): array
+    public static function parse(Receipt|array|string $receipt): array
     {
         if ($receipt instanceof Receipt) {
             return $receipt->toArray();

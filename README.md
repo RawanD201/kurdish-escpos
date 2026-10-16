@@ -56,6 +56,7 @@ KurdishEscpos::print(
 - [Usage without Laravel](#usage-without-laravel)
 - [Building receipts](#building-receipts)
 - [Supported printers](#supported-printers)
+- [Multiple printers](#multiple-printers)
 - [Fonts](#fonts)
 - [Contributing](#contributing)
 - [Credits](#credits)
@@ -347,8 +348,91 @@ php artisan kurdish-escpos:test-print /dev/usb/lp0 --width=384
 
 The test page has the words «ڕاست» (right) and «چەپ» (left) at the two
 edges of the paper. If one of them is cut off, your width is too large. If
-nothing prints, try `--image=column`. Without an address, the command uses
-the printer in your configuration.
+nothing prints, try `--image=column`.
+
+You can also give the name of a configured printer, such as
+`test-print kitchen`, or test every printer at once with `--all`. Without an
+address or a name, the command uses the default printer.
+
+## Multiple printers
+
+A shop often has more than one printer: one at the cashier, one in the
+kitchen, one at the bar. Give each printer a name in
+`config/kurdish-escpos.php`:
+
+```php
+'default' => 'cashier',
+
+'printers' => [
+    'cashier' => ['host' => '192.168.1.50'],
+    'kitchen' => ['host' => '192.168.1.51', 'width' => 384],
+    'bar' => ['path' => '/dev/usb/lp0', 'image' => 'column', 'cut' => 'none'],
+],
+```
+
+Each printer can have its own `width`, `font`, `image`, `cut`, `feed` and
+`drawer_pin`. The receipt is laid out again for each printer, so the same
+receipt fits both 80 mm and 58 mm paper.
+
+Print on one printer:
+
+```php
+KurdishEscpos::print($receipt);             // the default printer
+KurdishEscpos::print($receipt, 'kitchen');  // a named printer
+```
+
+Print on several printers at the same time:
+
+```php
+$result = KurdishEscpos::print($receipt, ['cashier', 'kitchen', 'bar']);
+```
+
+Network printers get the receipt at the same moment, so they all print
+together instead of waiting for each other. If one printer is off, the others
+still print. Check the result to see what happened:
+
+```php
+if (! $result->ok()) {
+    foreach ($result->failures() as $printer => $error) {
+        Log::warning("Printer {$printer} failed: {$error->getMessage()}");
+    }
+}
+
+$result->throw(); // or stop with an error if any printer failed
+```
+
+When you print on a single printer, a problem stops with a
+`PrinterException`, as before.
+
+To print different receipts at the same time, for example the customer
+receipt at the cashier and the order ticket in the kitchen, use
+`printEach()`:
+
+```php
+KurdishEscpos::printEach([
+    'cashier' => $receipt,
+    'kitchen' => $kitchenTicket,
+]);
+```
+
+`KurdishEscpos::receipt('kitchen')` starts a receipt with the width of the
+kitchen printer, and `php artisan kurdish-escpos:test-print --all` prints a
+test page on every printer at once.
+
+Without Laravel, pass the printers by name:
+
+```php
+use Rawand\KurdishEscpos\KurdishEscpos;
+use Rawand\KurdishEscpos\Printers\NetworkPrinter;
+use Rawand\KurdishEscpos\Printers\PrinterSetup;
+
+$escpos = new KurdishEscpos(new Renderer, [
+    'cashier' => new NetworkPrinter('192.168.1.50'),
+    'kitchen' => new PrinterSetup(new NetworkPrinter('192.168.1.51'), width: 384),
+], default: 'cashier');
+
+$escpos->print($receipt, ['cashier', 'kitchen']);
+```
 
 ## Fonts
 
