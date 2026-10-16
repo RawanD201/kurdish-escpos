@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos\Text;
+namespace RawanD201\KurdishEscpos\Text;
 
 /**
  * Lays out paragraphs: determines the paragraph direction, breaks lines at

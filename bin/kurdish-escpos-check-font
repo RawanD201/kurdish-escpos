@@ -10,8 +10,8 @@
 
 declare(strict_types=1);
 
-use Rawand\KurdishEscpos\FontCheck;
-use Rawand\KurdishEscpos\Renderer;
+use RawanD201\KurdishEscpos\FontCheck;
+use RawanD201\KurdishEscpos\Renderer;
 
 foreach ([$GLOBALS['_composer_autoload_path'] ?? null, __DIR__.'/../vendor/autoload.php'] as $autoload) {
     if ($autoload !== null && is_file($autoload)) {

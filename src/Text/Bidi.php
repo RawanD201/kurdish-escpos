@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos\Text;
+namespace RawanD201\KurdishEscpos\Text;
 
 /**
  * Implementation of the Unicode Bidirectional Algorithm (UAX #9), which

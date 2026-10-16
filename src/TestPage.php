@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos;
+namespace RawanD201\KurdishEscpos;
 
 /**
  * A printer test page: Kurdish, Arabic and Latin text, digits, an item row,

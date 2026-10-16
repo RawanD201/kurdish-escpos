@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos\Tests;
+namespace RawanD201\KurdishEscpos\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Rawand\KurdishEscpos\EscPos\Bitmap;
-use Rawand\KurdishEscpos\FontCheck;
-use Rawand\KurdishEscpos\Renderer;
-use Rawand\KurdishEscpos\Text\Font;
-use Rawand\KurdishEscpos\Text\TextLayout;
+use RawanD201\KurdishEscpos\EscPos\Bitmap;
+use RawanD201\KurdishEscpos\FontCheck;
+use RawanD201\KurdishEscpos\Renderer;
+use RawanD201\KurdishEscpos\Text\Font;
+use RawanD201\KurdishEscpos\Text\TextLayout;
 
 final class FontCheckTest extends TestCase
 {

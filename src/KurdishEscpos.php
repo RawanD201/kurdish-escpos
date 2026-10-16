@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos;
+namespace RawanD201\KurdishEscpos;
 
-use Rawand\KurdishEscpos\Exceptions\PrinterException;
-use Rawand\KurdishEscpos\Printers\ParallelSender;
-use Rawand\KurdishEscpos\Printers\Printer;
-use Rawand\KurdishEscpos\Printers\PrinterSetup;
-use Rawand\KurdishEscpos\Text\Font;
+use RawanD201\KurdishEscpos\Exceptions\PrinterException;
+use RawanD201\KurdishEscpos\Printers\ParallelSender;
+use RawanD201\KurdishEscpos\Printers\Printer;
+use RawanD201\KurdishEscpos\Printers\PrinterSetup;
+use RawanD201\KurdishEscpos\Text\Font;
 
 /**
  * Main entry point. Creates receipts, renders them, and sends them to one or

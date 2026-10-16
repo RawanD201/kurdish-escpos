@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos\Tests;
+namespace RawanD201\KurdishEscpos\Tests;
 
 use Orchestra\Testbench\TestCase;
-use Rawand\KurdishEscpos\KurdishEscpos;
-use Rawand\KurdishEscpos\Laravel\Facades\KurdishEscpos as KurdishEscposFacade;
-use Rawand\KurdishEscpos\Laravel\KurdishEscposServiceProvider;
-use Rawand\KurdishEscpos\Printers\FilePrinter;
-use Rawand\KurdishEscpos\Printers\NetworkPrinter;
-use Rawand\KurdishEscpos\Renderer;
+use RawanD201\KurdishEscpos\KurdishEscpos;
+use RawanD201\KurdishEscpos\Laravel\Facades\KurdishEscpos as KurdishEscposFacade;
+use RawanD201\KurdishEscpos\Laravel\KurdishEscposServiceProvider;
+use RawanD201\KurdishEscpos\Printers\FilePrinter;
+use RawanD201\KurdishEscpos\Printers\NetworkPrinter;
+use RawanD201\KurdishEscpos\Renderer;
 
 final class LaravelTest extends TestCase
 {

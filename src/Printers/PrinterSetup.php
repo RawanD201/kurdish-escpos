@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos\Printers;
+namespace RawanD201\KurdishEscpos\Printers;
 
-use Rawand\KurdishEscpos\EscPos\PrinterOptions;
-use Rawand\KurdishEscpos\Text\Font;
+use RawanD201\KurdishEscpos\EscPos\PrinterOptions;
+use RawanD201\KurdishEscpos\Text\Font;
 
 /**
  * A printer together with its own settings. Settings that are null fall

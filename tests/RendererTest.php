@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos\Tests;
+namespace RawanD201\KurdishEscpos\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Rawand\KurdishEscpos\EscPos\Bitmap;
-use Rawand\KurdishEscpos\EscPos\PrinterOptions;
-use Rawand\KurdishEscpos\Exceptions\RenderException;
-use Rawand\KurdishEscpos\Receipt;
-use Rawand\KurdishEscpos\Renderer;
+use RawanD201\KurdishEscpos\EscPos\Bitmap;
+use RawanD201\KurdishEscpos\EscPos\PrinterOptions;
+use RawanD201\KurdishEscpos\Exceptions\RenderException;
+use RawanD201\KurdishEscpos\Receipt;
+use RawanD201\KurdishEscpos\Renderer;
 
 final class RendererTest extends TestCase
 {

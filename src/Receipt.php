@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos;
+namespace RawanD201\KurdishEscpos;
 
 use InvalidArgumentException;
 use JsonSerializable;

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos\Tests;
+namespace RawanD201\KurdishEscpos\Tests;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Rawand\KurdishEscpos\Receipt;
+use RawanD201\KurdishEscpos\Receipt;
 
 final class ReceiptTest extends TestCase
 {

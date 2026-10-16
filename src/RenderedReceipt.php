@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos;
+namespace RawanD201\KurdishEscpos;
 
 /**
  * The result of rendering a receipt: a PNG preview and the command stream

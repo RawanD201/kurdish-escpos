@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos\Image;
+namespace RawanD201\KurdishEscpos\Image;
 
 use GdImage;
-use Rawand\KurdishEscpos\Text\Line;
+use RawanD201\KurdishEscpos\Text\Line;
 
 /**
  * Draws shaped text into a GD image.

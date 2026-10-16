@@ -27,7 +27,7 @@ it also works on normal shared hosting.
 </div>
 
 ```php
-use Rawand\KurdishEscpos\Laravel\Facades\KurdishEscpos;
+use RawanD201\KurdishEscpos\Laravel\Facades\KurdishEscpos;
 
 KurdishEscpos::print(
     KurdishEscpos::receipt()
@@ -143,7 +143,7 @@ php artisan vendor:publish --tag=kurdish-escpos-config
 Print a receipt:
 
 ```php
-use Rawand\KurdishEscpos\Laravel\Facades\KurdishEscpos;
+use RawanD201\KurdishEscpos\Laravel\Facades\KurdishEscpos;
 
 $receipt = KurdishEscpos::receipt()
     ->title('دەرمانخانەی ئازادی')
@@ -156,7 +156,7 @@ KurdishEscpos::print($receipt);
 To send a receipt to a printer other than the default one:
 
 ```php
-use Rawand\KurdishEscpos\Printers\NetworkPrinter;
+use RawanD201\KurdishEscpos\Printers\NetworkPrinter;
 
 KurdishEscpos::print($receipt, new NetworkPrinter('192.168.1.60'));
 ```
@@ -179,7 +179,7 @@ queued job:
 ```php
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Rawand\KurdishEscpos\Laravel\Facades\KurdishEscpos;
+use RawanD201\KurdishEscpos\Laravel\Facades\KurdishEscpos;
 
 class PrintReceipt implements ShouldQueue
 {
@@ -203,9 +203,9 @@ class PrintReceipt implements ShouldQueue
 ## Usage without Laravel
 
 ```php
-use Rawand\KurdishEscpos\Printers\NetworkPrinter;
-use Rawand\KurdishEscpos\Receipt;
-use Rawand\KurdishEscpos\Renderer;
+use RawanD201\KurdishEscpos\Printers\NetworkPrinter;
+use RawanD201\KurdishEscpos\Receipt;
+use RawanD201\KurdishEscpos\Renderer;
 
 $receipt = Receipt::make()
     ->title('سوپاس')
@@ -315,7 +315,7 @@ printer prints nothing, or prints strange symbols, switch to the older
 command:
 
 ```php
-use Rawand\KurdishEscpos\EscPos\PrinterOptions;
+use RawanD201\KurdishEscpos\EscPos\PrinterOptions;
 
 $renderer = new Renderer(options: new PrinterOptions(image: 'column'));
 ```
@@ -471,9 +471,9 @@ test page on every printer at once.
 Without Laravel, pass the printers by name:
 
 ```php
-use Rawand\KurdishEscpos\KurdishEscpos;
-use Rawand\KurdishEscpos\Printers\NetworkPrinter;
-use Rawand\KurdishEscpos\Printers\PrinterSetup;
+use RawanD201\KurdishEscpos\KurdishEscpos;
+use RawanD201\KurdishEscpos\Printers\NetworkPrinter;
+use RawanD201\KurdishEscpos\Printers\PrinterSetup;
 
 $escpos = new KurdishEscpos(new Renderer, [
     'cashier' => new NetworkPrinter('192.168.1.50'),

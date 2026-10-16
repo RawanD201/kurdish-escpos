@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos\Laravel\Console;
+namespace RawanD201\KurdishEscpos\Laravel\Console;
 
 use Illuminate\Console\Command;
-use Rawand\KurdishEscpos\FontCheck;
-use Rawand\KurdishEscpos\Renderer;
+use RawanD201\KurdishEscpos\FontCheck;
+use RawanD201\KurdishEscpos\Renderer;
 
 class CheckFontCommand extends Command
 {

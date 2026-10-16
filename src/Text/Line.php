@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos\Text;
+namespace RawanD201\KurdishEscpos\Text;
 
 /**
  * A line of shaped text ready for drawing. Glyph positions are in dots,

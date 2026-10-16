@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos\Text;
+namespace RawanD201\KurdishEscpos\Text;
 
-use Rawand\KurdishEscpos\Exceptions\KurdishEscposException;
+use RawanD201\KurdishEscpos\Exceptions\KurdishEscposException;
 
 /**
  * Reads TrueType and OpenType font files: metrics, the character map, glyph

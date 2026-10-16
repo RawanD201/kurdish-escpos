@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos\Text;
+namespace RawanD201\KurdishEscpos\Text;
 
 /**
  * A GSUB (glyph substitution) or GPOS (glyph positioning) table. These

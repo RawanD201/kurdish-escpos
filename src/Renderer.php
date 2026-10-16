@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos;
+namespace RawanD201\KurdishEscpos;
 
 use BaconQrCode\Common\ErrorCorrectionLevel;
 use BaconQrCode\Encoder\Encoder;
 use GdImage;
 use JsonException;
-use Rawand\KurdishEscpos\EscPos\Bitmap;
-use Rawand\KurdishEscpos\EscPos\PrinterOptions;
-use Rawand\KurdishEscpos\Exceptions\RenderException;
-use Rawand\KurdishEscpos\Image\Rasterizer;
-use Rawand\KurdishEscpos\Text\Font;
-use Rawand\KurdishEscpos\Text\Line;
-use Rawand\KurdishEscpos\Text\TextLayout;
+use RawanD201\KurdishEscpos\EscPos\Bitmap;
+use RawanD201\KurdishEscpos\EscPos\PrinterOptions;
+use RawanD201\KurdishEscpos\Exceptions\RenderException;
+use RawanD201\KurdishEscpos\Image\Rasterizer;
+use RawanD201\KurdishEscpos\Text\Font;
+use RawanD201\KurdishEscpos\Text\Line;
+use RawanD201\KurdishEscpos\Text\TextLayout;
 use Throwable;
 
 /**

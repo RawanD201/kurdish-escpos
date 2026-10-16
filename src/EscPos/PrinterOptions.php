@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos\EscPos;
+namespace RawanD201\KurdishEscpos\EscPos;
 
 use InvalidArgumentException;
 

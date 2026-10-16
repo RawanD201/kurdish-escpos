@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos\Laravel;
+namespace RawanD201\KurdishEscpos\Laravel;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
-use Rawand\KurdishEscpos\EscPos\PrinterOptions;
-use Rawand\KurdishEscpos\KurdishEscpos;
-use Rawand\KurdishEscpos\Printers\PrinterSetup;
-use Rawand\KurdishEscpos\Receipt;
-use Rawand\KurdishEscpos\Renderer;
+use RawanD201\KurdishEscpos\EscPos\PrinterOptions;
+use RawanD201\KurdishEscpos\KurdishEscpos;
+use RawanD201\KurdishEscpos\Printers\PrinterSetup;
+use RawanD201\KurdishEscpos\Receipt;
+use RawanD201\KurdishEscpos\Renderer;
 
 class KurdishEscposServiceProvider extends ServiceProvider
 {

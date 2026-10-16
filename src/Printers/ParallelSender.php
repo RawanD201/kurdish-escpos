@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos\Printers;
+namespace RawanD201\KurdishEscpos\Printers;
 
-use Rawand\KurdishEscpos\Exceptions\PrinterException;
+use RawanD201\KurdishEscpos\Exceptions\PrinterException;
 use Throwable;
 
 /**

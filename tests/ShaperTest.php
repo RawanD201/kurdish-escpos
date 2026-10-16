@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos\Tests;
+namespace RawanD201\KurdishEscpos\Tests;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Rawand\KurdishEscpos\Text\Font;
-use Rawand\KurdishEscpos\Text\Glyph;
-use Rawand\KurdishEscpos\Text\Shaper;
-use Rawand\KurdishEscpos\Text\Unicode;
+use RawanD201\KurdishEscpos\Text\Font;
+use RawanD201\KurdishEscpos\Text\Glyph;
+use RawanD201\KurdishEscpos\Text\Shaper;
+use RawanD201\KurdishEscpos\Text\Unicode;
 
 final class ShaperTest extends TestCase
 {

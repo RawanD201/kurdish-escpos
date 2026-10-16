@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos\Laravel\Console;
+namespace RawanD201\KurdishEscpos\Laravel\Console;
 
 use Composer\InstalledVersions;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Config\Repository;
 use InvalidArgumentException;
-use Rawand\KurdishEscpos\EscPos\PrinterOptions;
-use Rawand\KurdishEscpos\Exceptions\KurdishEscposException;
-use Rawand\KurdishEscpos\KurdishEscpos;
-use Rawand\KurdishEscpos\Printers\FilePrinter;
-use Rawand\KurdishEscpos\Printers\NetworkPrinter;
-use Rawand\KurdishEscpos\Printers\Printer;
-use Rawand\KurdishEscpos\Receipt;
-use Rawand\KurdishEscpos\Renderer;
-use Rawand\KurdishEscpos\TestPage;
+use RawanD201\KurdishEscpos\EscPos\PrinterOptions;
+use RawanD201\KurdishEscpos\Exceptions\KurdishEscposException;
+use RawanD201\KurdishEscpos\KurdishEscpos;
+use RawanD201\KurdishEscpos\Printers\FilePrinter;
+use RawanD201\KurdishEscpos\Printers\NetworkPrinter;
+use RawanD201\KurdishEscpos\Printers\Printer;
+use RawanD201\KurdishEscpos\Receipt;
+use RawanD201\KurdishEscpos\Renderer;
+use RawanD201\KurdishEscpos\TestPage;
 
 class TestPrintCommand extends Command
 {

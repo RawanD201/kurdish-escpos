@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos\Tests;
+namespace RawanD201\KurdishEscpos\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Rawand\KurdishEscpos\EscPos\Bitmap;
-use Rawand\KurdishEscpos\EscPos\PrinterOptions;
+use RawanD201\KurdishEscpos\EscPos\Bitmap;
+use RawanD201\KurdishEscpos\EscPos\PrinterOptions;
 
 final class BitmapTest extends TestCase
 {

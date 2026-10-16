@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos\Printers;
+namespace RawanD201\KurdishEscpos\Printers;
 
-use Rawand\KurdishEscpos\Exceptions\PrinterException;
+use RawanD201\KurdishEscpos\Exceptions\PrinterException;
 
 /**
  * A network printer reached over raw TCP. Most receipt printers listen on

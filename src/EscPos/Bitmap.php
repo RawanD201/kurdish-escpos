@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos\EscPos;
+namespace RawanD201\KurdishEscpos\EscPos;
 
 use GdImage;
-use Rawand\KurdishEscpos\Exceptions\RenderException;
+use RawanD201\KurdishEscpos\Exceptions\RenderException;
 
 /**
  * A monochrome image in the printer's raster format. Each row is $stride

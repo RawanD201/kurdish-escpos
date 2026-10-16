@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos\Tests;
+namespace RawanD201\KurdishEscpos\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Rawand\KurdishEscpos\EscPos\Bitmap;
-use Rawand\KurdishEscpos\EscPos\PrinterOptions;
-use Rawand\KurdishEscpos\KurdishEscpos;
-use Rawand\KurdishEscpos\Printers\FilePrinter;
-use Rawand\KurdishEscpos\Printers\PrinterSetup;
-use Rawand\KurdishEscpos\Receipt;
-use Rawand\KurdishEscpos\Renderer;
+use RawanD201\KurdishEscpos\EscPos\Bitmap;
+use RawanD201\KurdishEscpos\EscPos\PrinterOptions;
+use RawanD201\KurdishEscpos\KurdishEscpos;
+use RawanD201\KurdishEscpos\Printers\FilePrinter;
+use RawanD201\KurdishEscpos\Printers\PrinterSetup;
+use RawanD201\KurdishEscpos\Receipt;
+use RawanD201\KurdishEscpos\Renderer;
 
 /**
  * Zebra (ZPL) and TSC (TSPL) output. The ZPL encoder was also checked with

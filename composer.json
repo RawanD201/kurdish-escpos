@@ -53,12 +53,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Rawand\\KurdishEscpos\\": "src/"
+            "RawanD201\\KurdishEscpos\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Rawand\\KurdishEscpos\\Tests\\": "tests/"
+            "RawanD201\\KurdishEscpos\\Tests\\": "tests/"
         }
     },
     "bin": [
@@ -67,10 +67,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Rawand\\KurdishEscpos\\Laravel\\KurdishEscposServiceProvider"
+                "RawanD201\\KurdishEscpos\\Laravel\\KurdishEscposServiceProvider"
             ],
             "aliases": {
-                "KurdishEscpos": "Rawand\\KurdishEscpos\\Laravel\\Facades\\KurdishEscpos"
+                "KurdishEscpos": "RawanD201\\KurdishEscpos\\Laravel\\Facades\\KurdishEscpos"
             }
         }
     },

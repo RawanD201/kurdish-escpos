@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos\Tests;
+namespace RawanD201\KurdishEscpos\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Rawand\KurdishEscpos\Exceptions\PrinterException;
-use Rawand\KurdishEscpos\Printers\FilePrinter;
-use Rawand\KurdishEscpos\Printers\NetworkPrinter;
+use RawanD201\KurdishEscpos\Exceptions\PrinterException;
+use RawanD201\KurdishEscpos\Printers\FilePrinter;
+use RawanD201\KurdishEscpos\Printers\NetworkPrinter;
 
 final class PrinterTest extends TestCase
 {

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos\Tests;
+namespace RawanD201\KurdishEscpos\Tests;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Rawand\KurdishEscpos\Text\Bidi;
-use Rawand\KurdishEscpos\Text\Font;
-use Rawand\KurdishEscpos\Text\Line;
-use Rawand\KurdishEscpos\Text\TextLayout;
-use Rawand\KurdishEscpos\Text\Unicode;
+use RawanD201\KurdishEscpos\Text\Bidi;
+use RawanD201\KurdishEscpos\Text\Font;
+use RawanD201\KurdishEscpos\Text\Line;
+use RawanD201\KurdishEscpos\Text\TextLayout;
+use RawanD201\KurdishEscpos\Text\Unicode;
 
 final class TextLayoutTest extends TestCase
 {

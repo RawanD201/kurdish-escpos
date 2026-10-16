@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Rawand\KurdishEscpos;
+namespace RawanD201\KurdishEscpos;
 
-use Rawand\KurdishEscpos\Exceptions\KurdishEscposException;
-use Rawand\KurdishEscpos\Text\Font;
-use Rawand\KurdishEscpos\Text\Unicode;
+use RawanD201\KurdishEscpos\Exceptions\KurdishEscposException;
+use RawanD201\KurdishEscpos\Text\Font;
+use RawanD201\KurdishEscpos\Text\Unicode;
 
 /**
  * Inspects a font file and reports whether it is suitable for printing
