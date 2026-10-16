@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="art/banner.svg" alt="kurdish-escpos: print correctly shaped Kurdish, Arabic and English receipts on ESC/POS printers with pure PHP" width="100%">
+  <img src="art/banner.png" alt="kurdish-escpos: print correctly shaped Kurdish, Arabic and English receipts on ESC/POS printers with pure PHP" width="100%">
 </p>
 
 <p align="center">
@@ -40,7 +40,7 @@ KurdishEscpos::print(
 ```
 
 <p align="center">
-  <img src="examples/receipt.png" alt="A receipt printed by the package" width="360">
+  <img src="art/receipt.png" alt="A receipt printed by the package" width="360">
 </p>
 
 ## Contents
@@ -251,7 +251,6 @@ receipts are produced by another system:
 }
 ```
 
-The complete example is in [examples/receipt.json](examples/receipt.json).
 Unknown fields and invalid values are reported with a clear error message
 rather than ignored.
 
@@ -322,7 +321,7 @@ Fonts made only for Arabic, such as Cairo or Tajawal, lack the Kurdish
 letters; the font check reports this.
 
 <p align="center">
-  <img src="examples/fonts.png" alt="The same receipt printed with six different fonts" width="100%">
+  <img src="art/fonts.png" alt="The same receipt printed with six different fonts" width="100%">
 </p>
 
 ### Limitations

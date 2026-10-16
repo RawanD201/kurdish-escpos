@@ -7,5 +7,3 @@
 .idea/
 .vscode/
 
-# Output of examples/render.php
-/examples/receipt.bin

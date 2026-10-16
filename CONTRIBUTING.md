@@ -31,11 +31,11 @@ composer format    # Laravel Pint
 composer analyse   # PHPStan
 ```
 
-To see the effect of a change on a real receipt, render the example and open
-`examples/receipt.png`:
+To see the effect of a change on a real receipt, render the sample receipt
+with any font and open the PNG:
 
 ```bash
-php examples/render.php
+bin/kurdish-escpos-check-font resources/fonts/Vazirmatn.ttf sample.png
 ```
 
 ## Pull requests

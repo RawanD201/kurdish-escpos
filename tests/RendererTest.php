@@ -21,7 +21,7 @@ final class RendererTest extends TestCase
 
     public function test_renders_the_example_receipt(): void
     {
-        $rendered = self::renderer()->render((string) file_get_contents(__DIR__.'/../examples/receipt.json'));
+        $rendered = self::renderer()->render((string) file_get_contents(__DIR__.'/fixtures/receipt.json'));
 
         [$width, $height] = getimagesizefromstring($rendered->png) ?: [0, 0];
         $this->assertSame(576, $width);
